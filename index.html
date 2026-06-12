@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BASE RACER — Drive on Base</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════ SCREENS ══ -->
+
+<!-- 1. CONNECT SCREEN -->
+<div id="screen-connect" class="screen active">
+  <div class="connect-bg">
+    <div class="lane-lines"></div>
+    <div class="speedlines" id="speedlines"></div>
+  </div>
+  <div class="connect-card">
+    <div class="logo-mark">⬡</div>
+    <h1 class="game-title">BASE<br><span>RACER</span></h1>
+    <p class="sub">Drive on the Base network.<br>Every second you survive earns points.</p>
+    <button id="btn-connect" class="btn-primary">
+      <span class="btn-icon">◈</span> Connect Wallet
+    </button>
+    <p class="network-note">Base network only · EVM wallet required</p>
+  </div>
+</div>
+
+<!-- 2. START SCREEN -->
+<div id="screen-start" class="screen">
+  <div class="start-card">
+    <div class="wallet-badge">
+      <span class="dot"></span>
+      <span id="wallet-address-display">0x…</span>
+    </div>
+    <div class="logo-mark small">⬡</div>
+    <h2>Ready to Race?</h2>
+    <div class="stats-row">
+      <div class="stat">
+        <span class="stat-label">Best Score</span>
+        <span class="stat-value" id="best-score-display">0</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">Games Played</span>
+        <span class="stat-value" id="games-played-display">0</span>
+      </div>
+    </div>
+    <button id="btn-start" class="btn-primary">Start Engine</button>
+    <button id="btn-disconnect" class="btn-ghost">Disconnect</button>
+    <div class="how-to">
+      <span>← → or A D to steer</span>
+    </div>
+  </div>
+</div>
+
+<!-- 3. GAME SCREEN -->
+<div id="screen-game" class="screen">
+  <div class="hud">
+    <div class="hud-left">
+      <span class="hud-label">SCORE</span>
+      <span class="hud-value" id="hud-score">0</span>
+    </div>
+    <div class="hud-center">
+      <div class="health-bar-wrap">
+        <div class="health-bar" id="health-bar"></div>
+      </div>
+    </div>
+    <div class="hud-right">
+      <span class="hud-label">TIME</span>
+      <span class="hud-value" id="hud-time">0s</span>
+    </div>
+  </div>
+  <canvas id="game-canvas"></canvas>
+</div>
+
+<!-- 4. GAME OVER SCREEN -->
+<div id="screen-gameover" class="screen">
+  <div class="gameover-card">
+    <div class="crash-icon">💥</div>
+    <h2>CRASHED</h2>
+    <div class="final-score-block">
+      <span class="final-label">Final Score</span>
+      <span class="final-value" id="final-score">0</span>
+    </div>
+    <div class="go-stats">
+      <div class="go-stat">
+        <span>Survived</span>
+        <strong id="go-time">0s</strong>
+      </div>
+      <div class="go-stat">
+        <span>Best Score</span>
+        <strong id="go-best">0</strong>
+      </div>
+    </div>
+    <div id="tx-status" class="tx-status hidden">
+      <span class="tx-spinner"></span>
+      <span id="tx-msg">Signing score to Base…</span>
+    </div>
+    <div id="tx-done" class="tx-done hidden">
+      <span>✓</span> <a id="tx-link" href="#" target="_blank">View on Basescan</a>
+    </div>
+    <div class="go-buttons">
+      <button id="btn-play-again" class="btn-primary">Play Again</button>
+      <button id="btn-to-menu" class="btn-ghost">Menu</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ SCRIPTS ══ -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.9.0/ethers.umd.min.js"></script>
+<script src="game.js"></script>
+</body>
+</html>
