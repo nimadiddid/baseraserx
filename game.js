@@ -552,181 +552,349 @@ function drawCarShadow(x, y, w, h) {
   ctx.restore();
 }
 
-// Full car — F1/WRC rally body
+// ══════════════════════════════════════════════════════════
+//  CAR — angular polygon body matching top-down F1 reference
+//  Key shapes (all drawn with poly() helper):
+//    nose tip → sharp triangle point at front
+//    body     → diamond/arrowhead fuselage with beveled facets
+//    sidepods → swept trapezoids, wide at rear, cut at front
+//    cockpit  → teardrop dome with specular highlight
+//    wings    → swept leading-edge triangles front & rear
+// ══════════════════════════════════════════════════════════
 function drawCar(x, y, w, h, pal, isPlayer) {
   const cx = x + w/2;
   ctx.save();
 
-  // ── Underbody / diffuser (darkest layer) ──
-  ctx.fillStyle = "#0A0A0C";
-  roundRect(cx-w*.30, y+h*.82, w*.60, h*.14, 3); ctx.fill();
+  // ── helper: fill arbitrary polygon ──────────────────────
+  function poly(pts, style) {
+    ctx.fillStyle = style;
+    ctx.beginPath();
+    ctx.moveTo(pts[0][0], pts[0][1]);
+    for (let i=1;i<pts.length;i++) ctx.lineTo(pts[i][0],pts[i][1]);
+    ctx.closePath(); ctx.fill();
+  }
+  function polyStroke(pts, style, lw) {
+    ctx.strokeStyle = style; ctx.lineWidth = lw;
+    ctx.beginPath();
+    ctx.moveTo(pts[0][0], pts[0][1]);
+    for (let i=1;i<pts.length;i++) ctx.lineTo(pts[i][0],pts[i][1]);
+    ctx.closePath(); ctx.stroke();
+  }
 
-  // ── Rear wing assembly ──
-  const wingW = w * 1.12, wingThk = h*.055;
-  const wingStem = h*.038;
-  const wingY    = y + h*.76;
-  // Wing stem (two pillars)
+  // convenience coords (normalised to w/h)
+  const X = f => cx + f*w;
+  const Y = f => y  + f*h;
+
+  // ─────────────────────────────────────────────────────────
+  // 1. EXHAUST JETS  (drawn first — behind everything)
+  // ─────────────────────────────────────────────────────────
+  const jetColor = isPlayer ? pal.accent : pal.light;
+  for (const jx of [X(-.18), X(.18)]) {
+    const jLen = h * (.10 + Math.random()*.06);
+    const jg = ctx.createLinearGradient(jx, Y(1), jx, Y(1)+jLen);
+    jg.addColorStop(0,   hexA(jetColor, .95));
+    jg.addColorStop(.45, hexA(jetColor, .5));
+    jg.addColorStop(1,   "rgba(0,0,0,0)");
+    ctx.fillStyle = jg;
+    ctx.beginPath();
+    ctx.ellipse(jx, Y(1)+jLen*.4, w*.055, jLen*.55, 0, 0, Math.PI*2);
+    ctx.fill();
+  }
+
+  // ─────────────────────────────────────────────────────────
+  // 2. WHEELS  (behind body)
+  // ─────────────────────────────────────────────────────────
+  const tw = w*.24, th = h*.175;
+  const txOff = -tw*.08; // protrude slightly outside body
+  [
+    [x+txOff,            y+h*.07 ],  // front-left
+    [x+w-txOff-tw,       y+h*.07 ],  // front-right
+    [x+txOff,            y+h*.72 ],  // rear-left
+    [x+w-txOff-tw,       y+h*.72 ],  // rear-right
+  ].forEach(([tx,ty]) => drawWheel(tx, ty, tw, th, pal));
+
+  // ─────────────────────────────────────────────────────────
+  // 3. REAR WING  (wide swept blade, below body)
+  // ─────────────────────────────────────────────────────────
+  const rwy = Y(.77);
+  const rwHalfW = w*.56;
+  // Blade — swept back at outer ends (like a delta wing)
+  const rwg = ctx.createLinearGradient(X(-0),rwy,X(0),rwy+h*.06);
+  rwg.addColorStop(0, lighten(pal.body,.1));
+  rwg.addColorStop(1, pal.dark);
+  poly([
+    [X(-.56), rwy+h*.055],   // outer-left bottom
+    [X(-.56), rwy+h*.015],   // outer-left top
+    [X(-.22), rwy          ],   // inner-left top
+    [X( .22), rwy          ],   // inner-right top
+    [X( .56), rwy+h*.015],   // outer-right top
+    [X( .56), rwy+h*.055],   // outer-right bottom
+    [X( .22), rwy+h*.042],   // inner-right bottom
+    [X(-.22), rwy+h*.042],   // inner-left bottom
+  ], rwg);
+  // Wing pillars
   ctx.fillStyle = pal.dark;
-  ctx.fillRect(cx-w*.18, wingY+wingThk, w*.07, wingStem);
-  ctx.fillRect(cx+w*.11, wingY+wingThk, w*.07, wingStem);
-  // Wing blade
-  const wingGrad = ctx.createLinearGradient(0,wingY,0,wingY+wingThk);
-  wingGrad.addColorStop(0, pal.body);
-  wingGrad.addColorStop(1, pal.dark);
-  ctx.fillStyle = wingGrad;
-  roundRect(cx-wingW/2, wingY, wingW, wingThk, 3); ctx.fill();
+  ctx.fillRect(X(-.155), rwy+h*.042, w*.06, h*.038);
+  ctx.fillRect(X( .095), rwy+h*.042, w*.06, h*.038);
+  // Accent stripe on wing
+  ctx.fillStyle = pal.accent; ctx.globalAlpha=.55;
+  ctx.fillRect(X(-.50), rwy+h*.022, w*1.0, h*.016);
+  ctx.globalAlpha=1;
   // Endplates
   ctx.fillStyle = pal.dark;
-  ctx.fillRect(cx-wingW/2,     wingY-h*.025, w*.055, wingThk+h*.025);
-  ctx.fillRect(cx+wingW/2-w*.055, wingY-h*.025, w*.055, wingThk+h*.025);
-  // Wing stripe
-  ctx.fillStyle = pal.accent; ctx.globalAlpha=.6;
-  ctx.fillRect(cx-wingW*.38, wingY+wingThk*.2, wingW*.76, wingThk*.35);
-  ctx.globalAlpha=1;
+  poly([[X(-.56),rwy+h*.015],[X(-.56),rwy+h*.065],[X(-.50),rwy+h*.065],[X(-.50),rwy+h*.015]], pal.dark);
+  poly([[X( .50),rwy+h*.015],[X( .50),rwy+h*.065],[X( .56),rwy+h*.065],[X( .56),rwy+h*.015]], pal.dark);
 
-  // ── Side pods ──
-  const podW = w*.225, podH = h*.52, podY = y+h*.28;
-  const podGradL = ctx.createLinearGradient(x,0,x+podW,0);
-  podGradL.addColorStop(0, pal.dark); podGradL.addColorStop(1, pal.body);
-  ctx.fillStyle = podGradL;
-  roundRect(x+w*.01, podY, podW, podH, w*.05); ctx.fill();
-  const podGradR = ctx.createLinearGradient(x+w-podW,0,x+w,0);
-  podGradR.addColorStop(0, pal.body); podGradR.addColorStop(1, pal.dark);
-  ctx.fillStyle = podGradR;
-  roundRect(x+w-w*.01-podW, podY, podW, podH, w*.05); ctx.fill();
-  // Pod cooling vents (horizontal slits)
-  ctx.fillStyle = "rgba(0,0,0,.55)";
-  for (let v=0;v<3;v++) {
-    ctx.fillRect(x+w*.035,   podY+podH*.22+v*podH*.18, podW*.65, podH*.055);
-    ctx.fillRect(x+w-podW+w*.015, podY+podH*.22+v*podH*.18, podW*.65, podH*.055);
-  }
+  // ─────────────────────────────────────────────────────────
+  // 4. SIDEPODS  — swept trapezoids, angular outer edge
+  //    Wide at rear, narrow at front, with a hard crease line
+  // ─────────────────────────────────────────────────────────
+  // Left pod
+  const podFrontY = Y(.24), podRearY = Y(.76);
+  const podInnerFL = X(-.20), podInnerRL = X(-.24);
+  const podOuterFL = X(-.46), podOuterRL = X(-.50);
+  // Main pod face (top-lit facet)
+  const plg = ctx.createLinearGradient(podOuterFL,0,podInnerFL,0);
+  plg.addColorStop(0, pal.dark);
+  plg.addColorStop(.4, pal.body);
+  plg.addColorStop(.85, lighten(pal.body,.18));
+  plg.addColorStop(1, pal.body);
+  poly([
+    [podInnerFL, podFrontY],
+    [podOuterFL, podFrontY+h*.04],
+    [podOuterRL, podRearY ],
+    [podInnerRL, podRearY ],
+  ], plg);
+  // Pod crease / shadow facet (lower strip)
+  poly([
+    [podOuterFL, podFrontY+h*.04],
+    [podOuterFL, podFrontY+h*.10],
+    [podOuterRL, podRearY+h*.028],
+    [podOuterRL, podRearY],
+  ], pal.dark);
+  // Cooling intake (dark triangular opening near front)
+  poly([
+    [podOuterFL+w*.03, podFrontY+h*.05],
+    [podOuterFL+w*.03, podFrontY+h*.14],
+    [podOuterFL+w*.10, podFrontY+h*.14],
+    [podOuterFL+w*.12, podFrontY+h*.05],
+  ], "rgba(0,0,0,.75)");
 
-  // ── Central monocoque ──
-  const mw = w*.56, mx = cx - mw/2;
-  const monoGrad = ctx.createLinearGradient(mx,0,mx+mw,0);
-  monoGrad.addColorStop(0,   pal.dark);
-  monoGrad.addColorStop(.25, pal.body);
-  monoGrad.addColorStop(.5,  lighten(pal.body,.22));
-  monoGrad.addColorStop(.75, pal.body);
-  monoGrad.addColorStop(1,   pal.dark);
-  ctx.fillStyle = monoGrad;
-  roundRect(mx, y+h*.10, mw, h*.72, w*.12); ctx.fill();
+  // Right pod (mirrored)
+  const podInnerFR = X(.20), podInnerRR = X(.24);
+  const podOuterFR = X(.46), podOuterRR = X(.50);
+  const prg = ctx.createLinearGradient(podInnerFR,0,podOuterFR,0);
+  prg.addColorStop(0, pal.body);
+  prg.addColorStop(.15, lighten(pal.body,.18));
+  prg.addColorStop(.6, pal.body);
+  prg.addColorStop(1, pal.dark);
+  poly([
+    [podInnerFR, podFrontY],
+    [podOuterFR, podFrontY+h*.04],
+    [podOuterRR, podRearY ],
+    [podInnerRR, podRearY ],
+  ], prg);
+  poly([
+    [podOuterFR, podFrontY+h*.04],
+    [podOuterFR, podFrontY+h*.10],
+    [podOuterRR, podRearY+h*.028],
+    [podOuterRR, podRearY],
+  ], pal.dark);
+  poly([
+    [podOuterFR-w*.03, podFrontY+h*.05],
+    [podOuterFR-w*.03, podFrontY+h*.14],
+    [podOuterFR-w*.10, podFrontY+h*.14],
+    [podOuterFR-w*.12, podFrontY+h*.05],
+  ], "rgba(0,0,0,.75)");
 
-  // ── Nose cone ──
-  const noseGrad = ctx.createLinearGradient(mx,0,mx+mw,0);
-  noseGrad.addColorStop(0, pal.dark); noseGrad.addColorStop(.5, pal.body); noseGrad.addColorStop(1, pal.dark);
-  ctx.fillStyle = noseGrad;
+  // ─────────────────────────────────────────────────────────
+  // 5. CENTRAL BODY  — arrowhead/diamond polygon
+  //    Wide at rear-centre, tapers sharply to nose point
+  //    Has angled facet planes like the reference image
+  // ─────────────────────────────────────────────────────────
+  // Main fuselage shape: 8-point polygon
+  const bRearW  = w*.28;   // half-width at rear
+  const bMidW   = w*.25;   // half-width at cockpit zone
+  const bFrontW = w*.13;   // half-width at nose shoulder
+  const bNoseTip = w*.035; // nose-tip half-width (very narrow)
+
+  const fuselagePts = [
+    [cx - bRearW,  Y(.74)],   // rear-left
+    [cx - bMidW,   Y(.44)],   // left waist
+    [cx - bFrontW, Y(.16)],   // left shoulder
+    [cx - bNoseTip,Y(.01)],   // nose-left
+    [cx + bNoseTip,Y(.01)],   // nose-right
+    [cx + bFrontW, Y(.16)],   // right shoulder
+    [cx + bMidW,   Y(.44)],   // right waist
+    [cx + bRearW,  Y(.74)],   // rear-right
+  ];
+
+  // Base fill: left-to-right gradient (simulate overhead lighting)
+  const fg = ctx.createLinearGradient(cx-bRearW,0,cx+bRearW,0);
+  fg.addColorStop(0,    pal.dark);
+  fg.addColorStop(.18,  pal.body);
+  fg.addColorStop(.42,  lighten(pal.body,.30));  // bright highlight stripe left-of-centre
+  fg.addColorStop(.55,  lighten(pal.body,.15));
+  fg.addColorStop(.75,  pal.body);
+  fg.addColorStop(1,    pal.dark);
+  poly(fuselagePts, fg);
+
+  // Facet crease lines (sharp painted edges visible on real carbon-fibre bodywork)
+  ctx.save();
+  ctx.globalAlpha = .28;
+  polyStroke(fuselagePts, lighten(pal.body,.55), 1);
+  ctx.globalAlpha = 1;
+  ctx.restore();
+
+  // Left angled face panel (darker — side-shadow facet)
+  poly([
+    [cx-bRearW,  Y(.74)],
+    [cx-bMidW,   Y(.44)],
+    [cx-bFrontW, Y(.16)],
+    [cx-w*.20,   Y(.16)],
+    [cx-w*.18,   Y(.44)],
+    [cx-w*.22,   Y(.74)],
+  ], `rgba(0,0,0,.18)`);
+
+  // Right angled face panel
+  poly([
+    [cx+bRearW,  Y(.74)],
+    [cx+bMidW,   Y(.44)],
+    [cx+bFrontW, Y(.16)],
+    [cx+w*.20,   Y(.16)],
+    [cx+w*.18,   Y(.44)],
+    [cx+w*.22,   Y(.74)],
+  ], `rgba(0,0,0,.18)`);
+
+  // Spine accent stripe — tapered
+  const sg = ctx.createLinearGradient(0,Y(.01),0,Y(.74));
+  sg.addColorStop(0,   hexA(pal.accent,.9));
+  sg.addColorStop(.5,  hexA(pal.accent,.6));
+  sg.addColorStop(1,   hexA(pal.accent,.15));
+  poly([
+    [cx-w*.04, Y(.01)],
+    [cx+w*.04, Y(.01)],
+    [cx+w*.055,Y(.74)],
+    [cx-w*.055,Y(.74)],
+  ], sg);
+
+  // ─────────────────────────────────────────────────────────
+  // 6. COCKPIT DOME  — teardrop with gloss specular
+  // ─────────────────────────────────────────────────────────
+  // Outer surround (carbon-dark bezel)
+  const czY = Y(.26), czH = h*.32, czW = w*.22;
+  ctx.fillStyle = "#080A10";
   ctx.beginPath();
-  ctx.moveTo(mx,      y+h*.10);
-  ctx.lineTo(mx+mw,   y+h*.10);
-  ctx.lineTo(cx+mw*.18, y+h*.01);
-  ctx.lineTo(cx-mw*.18, y+h*.01);
+  ctx.moveTo(cx-czW*.55, czY+czH);
+  ctx.bezierCurveTo(cx-czW*.62,czY+czH*.6, cx-czW*.45,czY, cx,czY-h*.012);
+  ctx.bezierCurveTo(cx+czW*.45,czY, cx+czW*.62,czY+czH*.6, cx+czW*.55,czY+czH);
   ctx.closePath(); ctx.fill();
 
-  // ── Livery accent stripe (spine) ──
-  const stripeGrad = ctx.createLinearGradient(0,y+h*.03,0,y+h*.72);
-  stripeGrad.addColorStop(0,   pal.accent+"FF");
-  stripeGrad.addColorStop(.5,  pal.accent+"BB");
-  stripeGrad.addColorStop(1,   pal.accent+"44");
-  ctx.fillStyle = stripeGrad;
-  ctx.globalAlpha = .88;
-  roundRect(cx-w*.055, y+h*.02, w*.11, h*.65, 2); ctx.fill();
-  ctx.globalAlpha = 1;
-
-  // Number on side pods
-  if (!isPlayer) {
-    ctx.save();
-    ctx.fillStyle = "rgba(255,255,255,.60)";
-    ctx.font = `bold ${Math.floor(w*.18)}px 'Segoe UI',sans-serif`;
-    ctx.textAlign = "center";
-    ctx.fillText("●", x+w*.115, podY+podH*.62);
-    ctx.fillText("●", x+w*.885, podY+podH*.62);
-    ctx.restore();
-  }
-
-  // ── Cockpit ──
-  // Surround
-  ctx.fillStyle = pal.dark;
-  roundRect(cx-w*.195, y+h*.24, w*.39, h*.30, w*.08); ctx.fill();
-  // Halo
-  ctx.strokeStyle = pal.dark; ctx.lineWidth = w*.045;
+  // Glass lens — radial gradient for dome illusion
+  const gg = ctx.createRadialGradient(cx-czW*.15, czY+czH*.22, czH*.04,
+                                       cx,         czY+czH*.5,  czH*.5);
+  gg.addColorStop(0,   "rgba(180,210,255,.75)");
+  gg.addColorStop(.3,  isPlayer?"rgba(30,80,200,.70)":"rgba(15,15,40,.80)");
+  gg.addColorStop(.75, isPlayer?"rgba(5,20,100,.88)" :"rgba(5,5,20,.90)");
+  gg.addColorStop(1,   "rgba(0,0,0,.95)");
+  ctx.fillStyle = gg;
   ctx.beginPath();
-  ctx.moveTo(cx-w*.18, y+h*.255);
-  ctx.bezierCurveTo(cx-w*.14, y+h*.20, cx+w*.14, y+h*.20, cx+w*.18, y+h*.255);
-  ctx.stroke();
-  // Canopy glass
-  const glassGrad = ctx.createLinearGradient(cx-w*.16,y+h*.26,cx+w*.16,y+h*.50);
-  glassGrad.addColorStop(0,   isPlayer ? "rgba(20,60,160,.82)" : "rgba(10,10,30,.85)");
-  glassGrad.addColorStop(.35, isPlayer ? "rgba(40,100,220,.60)" : "rgba(25,25,50,.65)");
-  glassGrad.addColorStop(1,   isPlayer ? "rgba(5,20,80,.90)"  : "rgba(5,5,15,.90)");
-  ctx.fillStyle = glassGrad;
-  roundRect(cx-w*.155, y+h*.265, w*.31, h*.255, w*.07); ctx.fill();
-  // Glass highlight
-  ctx.fillStyle = "rgba(200,220,255,.18)";
-  roundRect(cx-w*.10, y+h*.275, w*.13, h*.075, 3); ctx.fill();
+  ctx.moveTo(cx-czW*.44, czY+czH);
+  ctx.bezierCurveTo(cx-czW*.50,czY+czH*.6, cx-czW*.35,czY+h*.01, cx,czY+h*.005);
+  ctx.bezierCurveTo(cx+czW*.35,czY+h*.01, cx+czW*.50,czY+czH*.6, cx+czW*.44,czY+czH);
+  ctx.closePath(); ctx.fill();
 
-  // ── Front wing ──
-  const fwW = w*.94, fwH = h*.048, fwY = y+h*.01;
-  const fwGrad = ctx.createLinearGradient(cx-fwW/2,0,cx+fwW/2,0);
-  fwGrad.addColorStop(0, pal.dark); fwGrad.addColorStop(.5, pal.body); fwGrad.addColorStop(1, pal.dark);
-  ctx.fillStyle = fwGrad;
-  roundRect(cx-fwW/2, fwY, fwW, fwH, 2); ctx.fill();
+  // Specular highlight — bright comma-shaped gleam top-left
+  ctx.save();
+  ctx.globalAlpha = .55;
+  const spec = ctx.createRadialGradient(cx-czW*.18,czY+czH*.14,0, cx-czW*.18,czY+czH*.14,czH*.28);
+  spec.addColorStop(0,   "rgba(255,255,255,.9)");
+  spec.addColorStop(.4,  "rgba(200,220,255,.4)");
+  spec.addColorStop(1,   "rgba(0,0,0,0)");
+  ctx.fillStyle = spec;
+  ctx.beginPath();
+  ctx.ellipse(cx-czW*.18, czY+czH*.18, czW*.28, czH*.20, -0.4, 0, Math.PI*2);
+  ctx.fill();
+  ctx.restore();
+
+  // Halo bar
+  ctx.save();
+  ctx.strokeStyle = "#0A0C14"; ctx.lineWidth = w*.05;
+  ctx.lineCap = "round";
+  ctx.beginPath();
+  ctx.moveTo(cx-czW*.42, czY+czH*.08);
+  ctx.bezierCurveTo(cx-czW*.30,czY-h*.02, cx+czW*.30,czY-h*.02, cx+czW*.42,czY+czH*.08);
+  ctx.stroke();
+  ctx.restore();
+
+  // ─────────────────────────────────────────────────────────
+  // 7. FRONT WING  — two swept delta planes + nose tip
+  // ─────────────────────────────────────────────────────────
+  const fwY = Y(.0);
+  const fwg = ctx.createLinearGradient(X(-.48),0,X(.48),0);
+  fwg.addColorStop(0, pal.dark); fwg.addColorStop(.5, lighten(pal.body,.1)); fwg.addColorStop(1, pal.dark);
+
+  // Left delta flap
+  poly([
+    [cx-w*.01, Y(.02)],         // inner-front
+    [cx-w*.27, Y(.02)],         // inner-rear edge of nose
+    [cx-w*.48, Y(.06)],         // outer tip
+    [cx-w*.46, Y(.10)],         // outer rear
+    [cx-w*.24, Y(.07)],         // mid
+    [cx-w*.01, Y(.055)],        // inner-rear
+  ], fwg);
+  // Right delta flap
+  poly([
+    [cx+w*.01, Y(.02)],
+    [cx+w*.27, Y(.02)],
+    [cx+w*.48, Y(.06)],
+    [cx+w*.46, Y(.10)],
+    [cx+w*.24, Y(.07)],
+    [cx+w*.01, Y(.055)],
+  ], fwg);
   // Front wing endplates
   ctx.fillStyle = pal.dark;
-  ctx.fillRect(cx-fwW/2,     fwY,         w*.048, fwH+h*.022);
-  ctx.fillRect(cx+fwW/2-w*.048, fwY,       w*.048, fwH+h*.022);
+  poly([[cx-w*.46,Y(.04)],[cx-w*.50,Y(.04)],[cx-w*.50,Y(.11)],[cx-w*.46,Y(.11)]], pal.dark);
+  poly([[cx+w*.46,Y(.04)],[cx+w*.50,Y(.04)],[cx+w*.50,Y(.11)],[cx+w*.46,Y(.11)]], pal.dark);
+  // Nose tip
+  const ntg = ctx.createLinearGradient(cx-w*.04,0,cx+w*.04,0);
+  ntg.addColorStop(0, pal.dark); ntg.addColorStop(.5, lighten(pal.body,.25)); ntg.addColorStop(1, pal.dark);
+  poly([
+    [cx-bNoseTip, Y(.01)],
+    [cx-w*.025,   Y(.055)],
+    [cx+w*.025,   Y(.055)],
+    [cx+bNoseTip, Y(.01)],
+  ], ntg);
 
-  // ── Lights ──
+  // ─────────────────────────────────────────────────────────
+  // 8. LIGHTS
+  // ─────────────────────────────────────────────────────────
   ctx.save();
   if (isPlayer) {
-    // Headlights — cool white/blue
-    ctx.shadowColor = "#88BBFF"; ctx.shadowBlur = 14;
-    ctx.fillStyle = "#D0E8FF";
-    ctx.fillRect(cx-w*.265, y+h*.036, w*.095, h*.038);
-    ctx.fillRect(cx+w*.17,  y+h*.036, w*.095, h*.038);
-    // DRL line
-    ctx.strokeStyle="rgba(180,210,255,.7)"; ctx.lineWidth=1.5;
-    ctx.beginPath(); ctx.moveTo(cx-w*.18,y+h*.058); ctx.lineTo(cx-w*.025,y+h*.058); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(cx+w*.025,y+h*.058); ctx.lineTo(cx+w*.18, y+h*.058); ctx.stroke();
+    // Headlights: two bright slivers behind front wing endplates
+    ctx.shadowColor = "#99CCFF"; ctx.shadowBlur = 16;
+    ctx.fillStyle = "#DDEEFF";
+    poly([[cx-w*.44,Y(.065)],[cx-w*.28,Y(.065)],[cx-w*.28,Y(.09)],[cx-w*.44,Y(.09)]], "#DDEEFF");
+    poly([[cx+w*.28,Y(.065)],[cx+w*.44,Y(.065)],[cx+w*.44,Y(.09)],[cx+w*.28,Y(.09)]], "#DDEEFF");
+    // DRL strip along front wing root
+    ctx.strokeStyle="rgba(160,200,255,.65)"; ctx.lineWidth=1.2;
+    ctx.beginPath(); ctx.moveTo(cx-w*.25,Y(.04)); ctx.lineTo(cx-w*.03,Y(.04)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx+w*.03,Y(.04)); ctx.lineTo(cx+w*.25,Y(.04)); ctx.stroke();
   } else {
-    // Tail lights — red
-    ctx.shadowColor = "#FF1100"; ctx.shadowBlur = 16;
-    ctx.fillStyle = "#FF2200";
-    ctx.fillRect(cx-w*.265, y+h*.875, w*.095, h*.040);
-    ctx.fillRect(cx+w*.17,  y+h*.875, w*.095, h*.040);
-    // Brake light strip
-    ctx.strokeStyle="rgba(255,80,40,.7)"; ctx.lineWidth=1.5;
-    ctx.beginPath(); ctx.moveTo(cx-w*.17,y+h*.898); ctx.lineTo(cx-w*.025,y+h*.898); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(cx+w*.025,y+h*.898); ctx.lineTo(cx+w*.17, y+h*.898); ctx.stroke();
+    // Tail lights: glowing red trapezoids
+    ctx.shadowColor = "#FF2200"; ctx.shadowBlur = 18;
+    ctx.fillStyle = "#FF3311";
+    poly([[cx-w*.22,Y(.87)],[cx-w*.06,Y(.87)],[cx-w*.05,Y(.91)],[cx-w*.23,Y(.91)]], "#FF3311");
+    poly([[cx+w*.06,Y(.87)],[cx+w*.22,Y(.87)],[cx+w*.23,Y(.91)],[cx+w*.05,Y(.91)]], "#FF3311");
+    // Inner brake glow
+    ctx.shadowBlur=8; ctx.fillStyle="rgba(255,60,0,.4)";
+    ctx.fillRect(cx-w*.15, Y(.91), w*.30, h*.015);
   }
   ctx.restore();
 
-  // ── Exhaust glow (player only) ──
-  if (isPlayer) {
-    for (const ex of [cx-w*.195, cx+w*.195]) {
-      const flame = ctx.createRadialGradient(ex, y+h+4, 0, ex, y+h+4, w*.13);
-      flame.addColorStop(0,   "rgba(100,180,255,.9)");
-      flame.addColorStop(.4,  "rgba(40,120,255,.5)");
-      flame.addColorStop(1,   "rgba(0,60,180,0)");
-      ctx.fillStyle = flame;
-      ctx.beginPath();
-      ctx.ellipse(ex, y+h+4+(Math.random()*4), w*.065, h*.072+(Math.random()*h*.025), 0, 0, Math.PI*2);
-      ctx.fill();
-    }
-  }
-
-  // ── Wheels (large, detailed) ──
-  const tw = w*.225, th = h*.17;
-  const tireInset = -tw*.12;
-  [
-    [x+tireInset,          y+h*.065],   // FL
-    [x+w-tireInset-tw,     y+h*.065],   // FR
-    [x+tireInset,          y+h*.73],    // RL
-    [x+w-tireInset-tw,     y+h*.73],    // RR
-  ].forEach(([tx, ty]) => drawWheel(tx, ty, tw, th, pal));
-
-  ctx.restore();
+  ctx.restore(); // end car
 }
+
 
 function drawWheel(x, y, w, h, pal) {
   const cx = x+w/2, cy = y+h/2;
@@ -785,6 +953,10 @@ function drawWheel(x, y, w, h, pal) {
 function hexToRgb(hex) {
   const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
   return [r,g,b];
+}
+function hexA(hex, a) {
+  const [r,g,b] = hexToRgb(hex);
+  return `rgba(${r},${g},${b},${a})`;
 }
 function darken(hex, f) {
   const [r,g,b] = hexToRgb(hex);
