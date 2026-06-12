@@ -8,8 +8,35 @@
 </head>
 <body>
 
-<!-- ═══════════════════════════════════════════ SCREENS ══ -->
+<!-- ═══════════════════════════════════════ TOP NAV BAR ══ -->
+<nav class="top-nav">
+  <div class="nav-left">
+    <span class="nav-brand">⬡ BASE RACER</span>
+  </div>
+  <div class="nav-right">
+    <div class="contact-founder">
+      <span class="contact-label">Contact Founder</span>
+      <a href="https://x.com/nimaUSD" target="_blank" class="nav-social-btn" title="X (Twitter)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.742l7.736-8.861L1.255 2.25h7.032l4.259 5.636L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/>
+        </svg>
+      </a>
+      <a href="https://base.app/profile/iranshahr" target="_blank" class="nav-social-btn baseapp-btn" title="Base App">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 6.5c-3.03 0-5.5 2.47-5.5 5.5s2.47 5.5 5.5 5.5c2.76 0 5.05-2.03 5.43-4.68H12V11.5h6.96c.04.32.04.65.04.5C19 15.87 15.87 19 12 19s-7-3.13-7-7 3.13-7 7-7v1.5z" fill="white"/>
+        </svg>
+        <span>Baseapp</span>
+      </a>
+    </div>
+    <button id="nav-wallet-btn" class="nav-wallet-btn">
+      <span class="wallet-btn-icon">◈</span>
+      <span id="nav-wallet-label">Connect Wallet</span>
+    </button>
+  </div>
+</nav>
 
+<!-- ═══════════════════════════════════════════ SCREENS ══ -->
 <!-- 1. CONNECT SCREEN -->
 <div id="screen-connect" class="screen active">
   <div class="connect-bg">
@@ -24,6 +51,11 @@
       <span class="btn-icon">◈</span> Connect Wallet
     </button>
     <p class="network-note">Base network only · EVM wallet required</p>
+  </div>
+
+  <!-- Footer note -->
+  <div class="screen-footer">
+    More updates coming soon 🔨
   </div>
 </div>
 
@@ -109,6 +141,40 @@
 
 <!-- ═══════════════════════════════════════════ SCRIPTS ══ -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.9.0/ethers.umd.min.js"></script>
+<script>
+  // ── Nav wallet button logic ──────────────────────────────
+  const navWalletBtn = document.getElementById('nav-wallet-btn');
+  const navWalletLabel = document.getElementById('nav-wallet-label');
+
+  function shortenAddress(addr) {
+    return addr.slice(0, 5) + '...' + addr.slice(-4);
+  }
+
+  // Watch for wallet connection from game.js by polling window.connectedAddress
+  // (game.js sets this when wallet connects — adjust variable name to match yours)
+  function updateNavWallet() {
+    const addr = window.connectedAddress || null;
+    if (addr) {
+      navWalletLabel.textContent = shortenAddress(addr);
+      navWalletBtn.classList.add('connected');
+    } else {
+      navWalletLabel.textContent = 'Connect Wallet';
+      navWalletBtn.classList.remove('connected');
+    }
+  }
+
+  // Poll every second to stay in sync with game.js wallet state
+  setInterval(updateNavWallet, 1000);
+
+  // Clicking nav button also triggers connect if not connected
+  navWalletBtn.addEventListener('click', () => {
+    if (!window.connectedAddress) {
+      // Trigger the main connect button click
+      const mainBtn = document.getElementById('btn-connect');
+      if (mainBtn) mainBtn.click();
+    }
+  });
+</script>
 <script src="game.js"></script>
 </body>
 </html>
