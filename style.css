@@ -16,6 +16,7 @@
   --success:     #22C55E;
   --card-bg:     rgba(10, 20, 40, 0.92);
   --radius:      16px;
+  --nav-h:       56px;
   --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
 }
 
@@ -30,9 +31,120 @@ html, body {
   user-select: none;
 }
 
+/* ─── TOP NAV ──────────────────────────────────────────── */
+.top-nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  height: var(--nav-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  background: rgba(5, 10, 25, 0.85);
+  border-bottom: 1px solid rgba(0, 82, 255, 0.18);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.nav-brand {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--white);
+  letter-spacing: 2px;
+  opacity: 0.9;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Contact founder + socials */
+.contact-founder {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.contact-label {
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.nav-social-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(0, 82, 255, 0.1);
+  border: 1px solid rgba(0, 82, 255, 0.25);
+  border-radius: 8px;
+  padding: 5px 9px;
+  color: var(--white);
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.2s, border-color 0.2s, transform 0.1s;
+  line-height: 1;
+}
+.nav-social-btn:hover {
+  background: rgba(0, 82, 255, 0.25);
+  border-color: rgba(0, 82, 255, 0.55);
+  transform: translateY(-1px);
+}
+.nav-social-btn:active { transform: translateY(0); }
+
+.baseapp-btn {
+  background: rgba(0, 82, 255, 0.15);
+}
+
+/* Wallet button in nav */
+.nav-wallet-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--base-blue);
+  color: #fff;
+  border: none;
+  border-radius: 9px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.3px;
+  transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
+  box-shadow: 0 2px 12px rgba(0, 82, 255, 0.4);
+  white-space: nowrap;
+}
+.nav-wallet-btn:hover {
+  background: #1a66ff;
+  box-shadow: 0 2px 20px rgba(0, 82, 255, 0.65);
+}
+.nav-wallet-btn:active { transform: scale(0.97); }
+
+.nav-wallet-btn.connected {
+  background: rgba(34, 197, 94, 0.15);
+  border: 1px solid rgba(34, 197, 94, 0.4);
+  color: #86efac;
+  box-shadow: 0 2px 12px rgba(34, 197, 94, 0.2);
+  font-family: monospace;
+  font-size: 12px;
+}
+.nav-wallet-btn.connected:hover {
+  background: rgba(34, 197, 94, 0.22);
+  box-shadow: 0 2px 18px rgba(34, 197, 94, 0.35);
+}
+
+.wallet-btn-icon { font-size: 15px; }
+.nav-wallet-btn.connected .wallet-btn-icon { display: none; }
+
 /* ─── SCREENS ──────────────────────────────────────────── */
 .screen {
-  position: absolute; inset: 0;
+  position: absolute;
+  top: var(--nav-h); left: 0; right: 0; bottom: 0;
   display: flex; align-items: center; justify-content: center;
   opacity: 0; pointer-events: none;
   transition: opacity 0.35s ease;
@@ -77,6 +189,24 @@ html, body {
   max-width: 380px; width: 90%;
   backdrop-filter: blur(20px);
   box-shadow: 0 0 80px rgba(0, 82, 255, 0.25), 0 24px 60px rgba(0,0,0,0.6);
+}
+
+/* ─── FOOTER NOTE (connect screen) ────────────────────── */
+.screen-footer {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  font-size: 13px;
+  color: var(--muted);
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  background: rgba(10, 20, 40, 0.6);
+  border: 1px solid rgba(0, 82, 255, 0.15);
+  border-radius: 20px;
+  padding: 7px 18px;
+  backdrop-filter: blur(8px);
 }
 
 .logo-mark {
@@ -225,6 +355,7 @@ html, body {
   background: transparent;
   display: block;
   padding: 0;
+  top: 0; /* game fills full viewport including nav area */
 }
 
 #game-canvas {
@@ -236,7 +367,7 @@ html, body {
 
 .hud {
   position: absolute;
-  top: 0; left: 0; right: 0;
+  top: var(--nav-h); left: 0; right: 0;
   z-index: 10;
   display: flex; align-items: center; justify-content: space-between;
   padding: 14px 20px;
@@ -363,8 +494,15 @@ html, body {
 }
 
 /* ─── RESPONSIVE ───────────────────────────────────────── */
+@media (max-width: 600px) {
+  .contact-label { display: none; }
+  .nav-brand { font-size: 13px; }
+  .nav-wallet-btn { padding: 7px 10px; font-size: 12px; }
+}
+
 @media (max-width: 480px) {
   .connect-card, .start-card, .gameover-card { padding: 32px 24px; }
   .game-title { font-size: 40px; }
   .hud-value { font-size: 20px; }
+  .nav-right { gap: 8px; }
 }
