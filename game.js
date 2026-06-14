@@ -274,8 +274,12 @@ function startGame() {
   opponents=[]; particles=[]; spawnTimer=0;
   currentSpeed=BASE_SPEED; speedLevel=0; flashTimer=0; shakeMag=0;
   lastTs=performance.now(); gameRunning=true;
-  resize(); updateHUD();
-  requestAnimationFrame(tick);
+  // resize بعد از اینکه game-root visible شد صدا زده بشه
+  requestAnimationFrame(() => {
+    resize();
+    updateHUD();
+    requestAnimationFrame(tick);
+  });
 }
 
 function tick(ts) {
