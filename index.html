@@ -37,8 +37,7 @@
   </div>
 </nav>
 
-<!-- ═══════════════════════════════════════════ SCREENS ══ -->
-<!-- 1. CONNECT SCREEN -->
+
 <div id="screen-connect" class="screen active">
   <div class="connect-bg">
     <div class="lane-lines"></div>
@@ -54,13 +53,13 @@
     <p class="network-note">Base network only · EVM wallet required</p>
   </div>
 
-  <!-- Footer note -->
+
   <div class="screen-footer">
     More updates coming soon 🔨
   </div>
 </div>
 
-<!-- 2. START SCREEN -->
+
 <div id="screen-start" class="screen">
   <div class="start-card">
     <div class="wallet-badge">
@@ -87,7 +86,7 @@
   </div>
 </div>
 
-<!-- 3. GAME SCREEN -->
+
 <div id="screen-game" class="screen">
   <div class="hud">
     <div class="hud-left">
@@ -107,7 +106,7 @@
   <canvas id="game-canvas"></canvas>
 </div>
 
-<!-- 4. GAME OVER SCREEN -->
+
 <div id="screen-gameover" class="screen">
   <div class="gameover-card">
     <div class="crash-icon">💥</div>
@@ -140,10 +139,10 @@
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════ SCRIPTS ══ -->
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.9.0/ethers.umd.min.js"></script>
 <script>
-  // ── Nav wallet button logic ──────────────────────────────
+ 
   const navWalletBtn = document.getElementById('nav-wallet-btn');
   const navWalletLabel = document.getElementById('nav-wallet-label');
 
@@ -151,8 +150,7 @@
     return addr.slice(0, 5) + '...' + addr.slice(-4);
   }
 
-  // Watch for wallet connection from game.js by polling window.connectedAddress
-  // (game.js sets this when wallet connects — adjust variable name to match yours)
+  
   function updateNavWallet() {
     const addr = window.connectedAddress || null;
     if (addr) {
@@ -164,13 +162,13 @@
     }
   }
 
-  // Poll every second to stay in sync with game.js wallet state
+  
   setInterval(updateNavWallet, 1000);
 
-  // Clicking nav button also triggers connect if not connected
+ 
   navWalletBtn.addEventListener('click', () => {
     if (!window.connectedAddress) {
-      // Trigger the main connect button click
+     
       const mainBtn = document.getElementById('btn-connect');
       if (mainBtn) mainBtn.click();
     }
