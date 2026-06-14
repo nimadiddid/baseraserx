@@ -34,7 +34,12 @@ const CONTRACT_BYTECODE = "0x608060405234801561001057600080fd5b50610b3f806100206
 let wallet       = null;
 let contract     = null;
 let contractAddr = localStorage.getItem("br_contract") || null;
-let score        = 0;
+
+function syncWallet() {
+  if (!wallet && window._walletSigner && window._walletAddress) {
+    wallet = { address:window._walletAddress, signer:window._walletSigner, provider:window._walletProvider };
+  }
+}
 let elapsed      = 0;
 let gameRunning  = false;
 let bestScore    = 0;
@@ -264,6 +269,7 @@ function drawParticles() {
 }
 
 function startGame() {
+  syncWallet();
   score=0; elapsed=0; roadOffset=0; bgOffset=0;
   opponents=[]; particles=[]; spawnTimer=0;
   currentSpeed=BASE_SPEED; speedLevel=0; flashTimer=0; shakeMag=0;
@@ -608,15 +614,9 @@ function endGame() {
   document.getElementById("go-best").textContent=bestScore;
   document.getElementById("tx-status").classList.add("hidden");
   document.getElementById("tx-done").classList.add("hidden");
-  showScreen("gameover");
+  document.getElementById("gameover-card").classList.add("show");
   submitScoreOnChain(fs, ss);
 }
 
-document.getElementById("btn-connect").addEventListener("click", connectWallet);
-document.getElementById("btn-start").addEventListener("click", ()=>{ showScreen("game"); startGame(); });
-document.getElementById("btn-disconnect").addEventListener("click", ()=>{ wallet=null; contract=null; showScreen("connect"); });
-document.getElementById("btn-play-again").addEventListener("click", ()=>{ showScreen("game"); startGame(); });
-document.getElementById("btn-to-menu").addEventListener("click", ()=>{ updateStartScreen(); showScreen("start"); });
-
+// buttons wired in index.html — only resize needed here
 resize();
-showScreen("connect");
