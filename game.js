@@ -604,34 +604,11 @@ function endGame() {
   submitScoreOnChain(fs, ss);
 }
 
-document.getElementById("btn-connect")?.addEventListener("click", async () => {
-  await connectWallet();
-  updateStartScreen();
-  showScreen("start");
-});
-
-document.getElementById("btn-start")?.addEventListener("click", () => {
-  showScreen("game");
-  resize();
-  startGame();
-});
-
-document.getElementById("btn-disconnect")?.addEventListener("click", () => {
-  wallet = null;
-  contract = null;
-  showScreen("connect");
-});
-
-document.getElementById("btn-play-again")?.addEventListener("click", () => {
-  showScreen("game");
-  resize();
-  startGame();
-});
-
-document.getElementById("btn-to-menu")?.addEventListener("click", () => {
-  updateStartScreen();
-  showScreen("start");
-});
+document.getElementById("btn-connect").addEventListener("click", connectWallet);
+document.getElementById("btn-start").addEventListener("click", ()=>{ showScreen("game"); startGame(); });
+document.getElementById("btn-disconnect").addEventListener("click", ()=>{ wallet=null; contract=null; showScreen("connect"); });
+document.getElementById("btn-play-again").addEventListener("click", ()=>{ showScreen("game"); startGame(); });
+document.getElementById("btn-to-menu").addEventListener("click", ()=>{ updateStartScreen(); showScreen("start"); });
 
 resize();
 showScreen("connect");
