@@ -583,5 +583,23 @@ function endGame() {
 }
 
 document.getElementById("btn-connect")?.addEventListener("click", connectWallet);
-document.getElementById("btn-start")?.addEventListener("click", startGame);
-document.getElementById("btn-restart")?.addEventListener("click", () => { showScreen("start"); });
+
+document.getElementById("btn-start")?.addEventListener("click", async () => {
+
+  if (!wallet) {
+    await connectWallet();
+  }
+
+
+  showScreen("game");
+
+
+  resize();
+
+
+  startGame();
+});
+
+document.getElementById("btn-restart")?.addEventListener("click", () => {
+  showScreen("start");
+});
