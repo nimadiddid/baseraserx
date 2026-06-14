@@ -3,47 +3,129 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BASE RACER</title>
+  <title>BASE RACER — Drive on Base</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
+<!-- ══════════════════════════════ SCREEN 1: CONNECT/MENU ══ -->
 <div id="screen-connect" class="screen active">
-  <canvas id="intro-canvas"></canvas>
 
-  <div class="intro-overlay">
-    <div class="intro-top">
-      <div class="base-hex">⬡</div>
-      <h1 class="intro-title">BASE<span>RACER</span></h1>
-      <p class="intro-sub">Drive on the Base network · Earn points · Set records on-chain</p>
+  <!-- Road scene background -->
+  <div class="road-scene">
+    <div class="rs-sky"></div>
+    <div class="rs-horizon-glow"></div>
+
+    <svg class="rs-mountains" viewBox="0 0 800 200" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="0,180 60,90 130,140 210,70 280,130 360,60 430,120 510,50 580,110 660,40 730,100 800,60 800,200 0,200" fill="#0e2010"/>
+      <polygon points="0,200 0,160 80,130 160,160 240,120 320,150 400,110 480,150 560,125 640,155 720,130 800,155 800,200" fill="#152a15"/>
+      <g fill="#0a1f0a">
+        <rect x="20"  y="100" width="8" height="60"/><polygon points="24,100 4,100 8,80 0,80 10,58 20,80 14,80"/>
+        <rect x="50"  y="110" width="6" height="50"/><polygon points="53,110 37,110 42,90 34,90 44,70 53,90 48,90"/>
+        <rect x="80"  y="115" width="7" height="45"/><polygon points="83,115 67,115 72,95 64,95 74,74 83,95 78,95"/>
+        <rect x="108" y="120" width="6" height="40"/><polygon points="111,120 96,120 101,100 93,100 102,80 111,100 106,100"/>
+      </g>
+      <g fill="#0a1f0a">
+        <rect x="720" y="100" width="8" height="60"/><polygon points="724,100 704,100 708,80 700,80 710,58 720,80 714,80"/>
+        <rect x="745" y="110" width="6" height="50"/><polygon points="748,110 732,110 737,90 729,90 739,70 748,90 743,90"/>
+        <rect x="763" y="115" width="7" height="45"/><polygon points="766,115 750,115 755,95 747,95 757,74 766,95 761,95"/>
+        <rect x="786" y="120" width="6" height="40"/><polygon points="789,120 773,120 778,100 771,100 779,80 789,100 784,100"/>
+      </g>
+    </svg>
+
+    <div class="rs-grass-left"></div>
+    <div class="rs-grass-right"></div>
+
+    <svg class="rs-road" viewBox="0 0 800 500" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="400,0 800,500 0,500" fill="#252525"/>
+      <polygon points="400,0 370,0 50,500 0,500"   fill="#333"/>
+      <polygon points="400,0 430,0 750,500 800,500" fill="#333"/>
+      <polygon points="392,0 380,0 70,500 95,500"   fill="#e0e0e0" opacity="0.7"/>
+      <polygon points="408,0 420,0 730,500 705,500"  fill="#e0e0e0" opacity="0.7"/>
+      <polygon points="398,20  402,20  404,60  396,60"   fill="#f5c842" opacity="0.9"/>
+      <polygon points="397,85  403,85  407,145 393,145"  fill="#f5c842" opacity="0.9"/>
+      <polygon points="394,170 406,170 413,250 387,250"  fill="#f5c842" opacity="0.85"/>
+      <polygon points="390,270 410,270 420,370 380,370"  fill="#f5c842" opacity="0.8"/>
+      <polygon points="384,390 416,390 432,500 368,500"  fill="#f5c842" opacity="0.75"/>
+    </svg>
+
+    <!-- Traffic lights -->
+    <div class="rs-light-pole rs-pole-left">
+      <div class="rs-light-arm"></div>
+      <div class="rs-traffic-light">
+        <div class="rs-bulb" id="tl-red-l"></div>
+        <div class="rs-bulb" id="tl-yellow-l"></div>
+        <div class="rs-bulb" id="tl-green-l"></div>
+      </div>
     </div>
-
-    <div class="traffic-light-wrap">
-      <div class="tl-pole"></div>
-      <div class="tl-box">
-        <div class="tl-light red"   id="tl-r"></div>
-        <div class="tl-light amber" id="tl-a"></div>
-        <div class="tl-light green" id="tl-g"></div>
+    <div class="rs-light-pole rs-pole-right">
+      <div class="rs-light-arm"></div>
+      <div class="rs-traffic-light">
+        <div class="rs-bulb" id="tl-red-r"></div>
+        <div class="rs-bulb" id="tl-yellow-r"></div>
+        <div class="rs-bulb" id="tl-green-r"></div>
       </div>
     </div>
 
-    <div class="intro-bottom">
-      <button id="btn-connect" class="btn-go">
-        <span class="btn-go-icon">◈</span>
-        Connect Wallet
-      </button>
-      <p class="intro-note">Base network only · EVM wallet required</p>
+    <div class="rs-vignette"></div>
+  </div><!-- /road-scene -->
+
+  <!-- TOP NAV -->
+  <nav class="top-nav">
+    <div class="nav-logo">BASE <span>RACER</span></div>
+    <div class="nav-right">
+      <span class="contact-label">Contact Founder</span>
+      <a href="https://x.com/nimaUSD" target="_blank" class="nav-social" title="X (Twitter)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.742l7.736-8.861L1.255 2.25h7.032l4.259 5.636L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+        </svg>
+      </a>
+      <a href="https://base.app/profile/iranshahr" target="_blank" class="nav-social nav-social--base" title="Baseapp">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 7a5 5 0 1 0 4.546 2.914l-2.018 1.01A3 3 0 1 1 12 9V7z" fill="white"/>
+        </svg>
+        Baseapp
+      </a>
     </div>
+  </nav>
+
+  <!-- TITLE -->
+  <div class="menu-title">
+    <div class="menu-title__main">BASE<br><span>RACER</span></div>
+    <div class="menu-title__sub">Drive on Base &middot; Earn Points &middot; Own the Road</div>
   </div>
+
+  <!-- CONNECT BUTTON -->
+  <div class="menu-actions">
+    <button id="btn-connect" class="btn-start-road">
+      <span class="btn-icon">&#9672;</span> Connect Wallet
+    </button>
+    <p class="network-note">Base network only &middot; EVM wallet required</p>
+  </div>
+
+  <!-- deploy progress (used by game.js) -->
+  <div id="tx-status" class="tx-status hidden">
+    <span class="tx-spinner"></span>
+    <span id="tx-msg">Deploying scoreboard…</span>
+  </div>
+
+  <!-- speedlines anchor (game.js populates #speedlines) -->
+  <div class="speedlines" id="speedlines"></div>
+
+  <!-- FOOTER -->
+  <div class="menu-footer">More updates coming soon 🔨</div>
+
 </div>
 
+<!-- ═══════════════════════════════════════ SCREEN 2: START ══ -->
 <div id="screen-start" class="screen">
   <div class="start-card">
     <div class="wallet-badge">
       <span class="dot"></span>
       <span id="wallet-address-display">0x…</span>
     </div>
-    <div class="logo-mark small">⬡</div>
+    <div class="logo-mark small">&#11041;</div>
     <h2>Ready to Race?</h2>
     <div class="stats-row">
       <div class="stat">
@@ -57,10 +139,11 @@
     </div>
     <button id="btn-start" class="btn-primary">Start Engine</button>
     <button id="btn-disconnect" class="btn-ghost">Disconnect</button>
-    <div class="how-to"><span>← → or A D to steer</span></div>
+    <div class="how-to"><span>&larr; &rarr; or A D to steer</span></div>
   </div>
 </div>
 
+<!-- ════════════════════════════════════════ SCREEN 3: GAME ══ -->
 <div id="screen-game" class="screen">
   <div class="hud">
     <div class="hud-left">
@@ -80,9 +163,10 @@
   <canvas id="game-canvas"></canvas>
 </div>
 
+<!-- ═══════════════════════════════════ SCREEN 4: GAME OVER ══ -->
 <div id="screen-gameover" class="screen">
   <div class="gameover-card">
-    <div class="crash-icon">💥</div>
+    <div class="crash-icon">&#128165;</div>
     <h2>CRASHED</h2>
     <div class="final-score-block">
       <span class="final-label">Final Score</span>
@@ -92,23 +176,64 @@
       <div class="go-stat"><span>Survived</span><strong id="go-time">0s</strong></div>
       <div class="go-stat"><span>Best Score</span><strong id="go-best">0</strong></div>
     </div>
-    <div id="tx-status" class="tx-status hidden">
+    <div id="tx-status-go" class="tx-status hidden">
       <span class="tx-spinner"></span>
-      <span id="tx-msg">Saving score to Base…</span>
+      <span id="tx-msg">Signing score to Base…</span>
     </div>
     <div id="tx-done" class="tx-done hidden">
-      <span>✓</span> <a id="tx-link" href="#" target="_blank">View on Basescan</a>
+      <span>&#10003;</span> <a id="tx-link" href="#" target="_blank">View on Basescan</a>
     </div>
     <div class="go-buttons">
       <button id="btn-play-again" class="btn-primary">Play Again</button>
-      <button id="btn-to-menu" class="btn-ghost">Menu</button>
+      <button id="btn-to-menu"    class="btn-ghost">Menu</button>
     </div>
   </div>
 </div>
 
+<!-- ═══════════════════════════════════════════════ SCRIPTS ══ -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.9.0/ethers.umd.min.js"></script>
-<script src="intro.js"></script>
+
+<script>
+// Traffic light helper — also called by game.js via window.tlSet
+function tlSet(color) {
+  const map = {
+    red:    ['tl-red-l',    'tl-red-r'],
+    yellow: ['tl-yellow-l', 'tl-yellow-r'],
+    green:  ['tl-green-l',  'tl-green-r'],
+  };
+  // clear all
+  ['tl-red-l','tl-yellow-l','tl-green-l','tl-red-r','tl-yellow-r','tl-green-r']
+    .forEach(id => { var el=document.getElementById(id); if(el) el.className='rs-bulb'; });
+  // light the requested color
+  if (color && map[color]) {
+    map[color].forEach(id => {
+      var el = document.getElementById(id);
+      if (el) el.classList.add('rs-bulb--' + color);
+    });
+  }
+}
+window.tlSet = tlSet;
+
+// game.js calls getElementById('tx-status') on screen-gameover too.
+// We route that to tx-status-go by patching after gameover becomes active.
+(function() {
+  var goScreen  = document.getElementById('screen-gameover');
+  var mainTxEl  = document.getElementById('tx-status');
+  var goTxEl    = document.getElementById('tx-status-go');
+  var obs = new MutationObserver(function() {
+    if (goScreen.classList.contains('active')) {
+      // copy state from main to gameover element then hide main
+      goTxEl.className  = mainTxEl.className;
+      mainTxEl.className = 'tx-status hidden';
+    }
+  });
+  obs.observe(goScreen, { attributes: true, attributeFilter: ['class'] });
+})();
+
+// Show red light on menu
+tlSet('red');
+</script>
+
 <script src="game.js"></script>
 </body>
-</html>
 </html>
