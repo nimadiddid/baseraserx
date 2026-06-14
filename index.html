@@ -61,7 +61,7 @@
   #toast.error   { border-color:rgba(239,68,68,.5); }
   #toast.success { border-color:rgba(34,197,94,.5); color:#86efac; }
 
-  /* ── GAME OVERLAY (hides menu when game starts) ── */
+  /* ── GAME OVERLAY ── */
   #game-root { display:none; position:fixed; inset:0; z-index:50; background:#000; }
   #game-root.active { display:block; }
 
@@ -179,7 +179,7 @@
 <div class="footer-note">More updates coming soon 🔨</div>
 <div id="toast"></div>
 
-<!-- ── GAME ROOT (injected on start) ── -->
+<!-- ── GAME ROOT ── -->
 <div id="game-root">
   <canvas id="game-canvas"></canvas>
   <div class="hud">
@@ -211,13 +211,13 @@
       </div>
       <div id="tx-status" class="tx-status hidden">
         <span class="tx-spinner"></span>
-        <span id="tx-msg">Deploying to Base…</span>
+        <span id="tx-msg">Submitting to Base…</span>
       </div>
       <div id="tx-done" class="tx-done hidden">
         <span>✓</span> <a id="tx-link" href="#" target="_blank">View on Basescan</a>
       </div>
       <div class="go-buttons">
-        <button class="btn-primary" id="btn-play-again">Play Again</button>
+        <button class="btn-primary" id="btn-play-again">▶ Play Again</button>
         <button class="btn-ghost"   id="btn-to-menu">Menu</button>
       </div>
     </div>
@@ -226,123 +226,144 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.9.0/ethers.umd.min.js"></script>
 <script>
-// ── menu wallet state (shared with game.js via window) ──
+// ── Menu wallet logic ──
 const BASE_CHAIN_ID_MENU = 8453n;
 const BASE_RPC_MENU      = 'https://mainnet.base.org';
 
 function shorten(a){ return a.slice(0,5)+'…'+a.slice(-4); }
 
-function showToast(msg,type='',ms=3500){
-  const t=document.getElementById('toast');
-  t.textContent=msg; t.className=type; t.style.display='block';
-  clearTimeout(t._t); t._t=setTimeout(()=>{t.style.display='none';},ms);
+function showToast(msg, type, ms){
+  ms = ms || 3500;
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = type || ''; t.style.display = 'block';
+  clearTimeout(t._t); t._t = setTimeout(function(){ t.style.display = 'none'; }, ms);
 }
 
 function setWalletUI(addr){
-  const btn=document.getElementById('btn-wallet');
-  const lbl=document.getElementById('wallet-label');
-  if(addr){ lbl.textContent=shorten(addr); btn.classList.add('connected'); }
-  else    { lbl.textContent='Connect Wallet'; btn.classList.remove('connected'); }
+  const btn = document.getElementById('btn-wallet');
+  const lbl = document.getElementById('wallet-label');
+  if(addr){ lbl.textContent = shorten(addr); btn.classList.add('connected'); }
+  else    { lbl.textContent = 'Connect Wallet'; btn.classList.remove('connected'); }
 }
 
 function setLight(color){
-  ['red','yellow','green'].forEach(c=>{
-    const on=c===color;
-    document.getElementById('bulb-l-'+c).className='bulb'+(on?' '+c+'-on':'');
-    document.getElementById('bulb-r-'+c).className='bulb'+(on?' '+c+'-on':'');
+  ['red','yellow','green'].forEach(function(c){
+    const on = c === color;
+    document.getElementById('bulb-l-'+c).className = 'bulb' + (on ? ' '+c+'-on' : '');
+    document.getElementById('bulb-r-'+c).className = 'bulb' + (on ? ' '+c+'-on' : '');
   });
 }
 
 async function connectWallet(){
   if(!window.ethereum){ showToast('🦊 No EVM wallet found.','error'); return false; }
   try {
-    const accounts=await window.ethereum.request({method:'eth_requestAccounts'});
-    if(!accounts||!accounts.length) throw new Error('no accounts');
-    const chainHex=await window.ethereum.request({method:'eth_chainId'});
-    if(BigInt(chainHex)!==BASE_CHAIN_ID_MENU){
+    const accounts = await window.ethereum.request({method:'eth_requestAccounts'});
+    if(!accounts || !accounts.length) throw new Error('no accounts');
+    const chainHex = await window.ethereum.request({method:'eth_chainId'});
+    if(BigInt(chainHex) !== BASE_CHAIN_ID_MENU){
       try {
         await window.ethereum.request({method:'wallet_switchEthereumChain',params:[{chainId:'0x2105'}]});
       } catch(e){
-        if(e.code===4902) await window.ethereum.request({method:'wallet_addEthereumChain',params:[{
-          chainId:'0x2105',chainName:'Base',
-          nativeCurrency:{name:'Ether',symbol:'ETH',decimals:18},
-          rpcUrls:[BASE_RPC_MENU],blockExplorerUrls:['https://basescan.org']
-        }]});
-        else throw e;
+        if(e.code===4902){
+          await window.ethereum.request({method:'wallet_addEthereumChain',params:[{
+            chainId:'0x2105', chainName:'Base',
+            nativeCurrency:{name:'Ether',symbol:'ETH',decimals:18},
+            rpcUrls:[BASE_RPC_MENU], blockExplorerUrls:['https://basescan.org']
+          }]});
+        } else throw e;
       }
     }
-    const provider=new ethers.BrowserProvider(window.ethereum);
-    const signer=await provider.getSigner();
-    const address=await signer.getAddress();
-    window._walletProvider=provider;
-    window._walletSigner=signer;
-    window._walletAddress=address;
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const signer   = await provider.getSigner();
+    const address  = await signer.getAddress();
+    window._walletProvider = provider;
+    window._walletSigner   = signer;
+    window._walletAddress  = address;
     setWalletUI(address);
-    showToast('✓ Connected — '+shorten(address),'success');
+    showToast('✓ Connected — '+shorten(address), 'success');
     return true;
   } catch(e){ console.error(e); showToast('Connection failed.','error'); return false; }
 }
 
 function runCountdownThenStart(){
-  const btnStart=document.getElementById('btn-start');
-  const cd=document.getElementById('countdown-overlay');
-  btnStart.style.display='none'; cd.style.display='block';
-  setLight('red'); cd.textContent='';
-  setTimeout(()=>{ setLight('yellow'); cd.textContent=''; }, 1000);
-  setTimeout(()=>{ setLight('green'); cd.style.color='#22c55e'; cd.style.textShadow='0 0 40px #22c55e'; cd.textContent='GO!'; }, 2000);
-  setTimeout(()=>{
-    cd.style.display='none'; cd.style.color=''; cd.style.textShadow=''; setLight('off');
-    // show game, hide menu
+  const btnStart = document.getElementById('btn-start');
+  const cd       = document.getElementById('countdown-overlay');
+  btnStart.style.display = 'none';
+  cd.style.display = 'block';
+  setLight('red'); cd.textContent = '';
+  setTimeout(function(){ setLight('yellow'); cd.textContent = ''; }, 1000);
+  setTimeout(function(){
+    setLight('green');
+    cd.style.color = '#22c55e';
+    cd.style.textShadow = '0 0 40px #22c55e';
+    cd.textContent = 'GO!';
+  }, 2000);
+  setTimeout(function(){
+    cd.style.display = 'none';
+    cd.style.color = '';
+    cd.style.textShadow = '';
+    setLight('off');
+    // Show game screen
     document.getElementById('game-root').classList.add('active');
     // startGame is defined in game.js
-    if(typeof startGame==='function') startGame();
+    if(typeof startGame === 'function') startGame();
   }, 3000);
 }
 
-document.getElementById('btn-wallet').addEventListener('click', async ()=>{
+document.getElementById('btn-wallet').addEventListener('click', async function(){
   if(window._walletAddress) return;
   await connectWallet();
 });
 
-document.getElementById('btn-start').addEventListener('click', async ()=>{
+document.getElementById('btn-start').addEventListener('click', async function(){
   if(!window._walletAddress){
-    const ok=await connectWallet();
+    const ok = await connectWallet();
     if(!ok) return;
   }
   runCountdownThenStart();
 });
 
-document.getElementById('btn-play-again').addEventListener('click', ()=>{
+document.getElementById('btn-play-again').addEventListener('click', function(){
   document.getElementById('gameover-card').classList.remove('show');
-  if(typeof startGame==='function') startGame();
+  if(typeof startGame === 'function') startGame();
 });
 
-document.getElementById('btn-to-menu').addEventListener('click', ()=>{
+document.getElementById('btn-to-menu').addEventListener('click', function(){
   document.getElementById('gameover-card').classList.remove('show');
   document.getElementById('game-root').classList.remove('active');
-  document.getElementById('btn-start').style.display='';
+  document.getElementById('btn-start').style.display = '';
   setLight('off');
 });
 
-window.addEventListener('load', async ()=>{
+// Auto-reconnect if already authorized
+window.addEventListener('load', async function(){
   setLight('off');
   if(window.ethereum){
-    const accounts=await window.ethereum.request({method:'eth_accounts'});
-    if(accounts&&accounts.length){
-      const p=new ethers.BrowserProvider(window.ethereum);
-      const s=await p.getSigner();
-      const a=await s.getAddress();
-      window._walletProvider=p; window._walletSigner=s; window._walletAddress=a;
-      setWalletUI(a);
-    }
-    window.ethereum.on('accountsChanged',async accs=>{
-      if(accs&&accs.length){
-        const p=new ethers.BrowserProvider(window.ethereum);
-        const s=await p.getSigner();
-        window._walletProvider=p; window._walletSigner=s; window._walletAddress=accs[0];
+    try {
+      const accounts = await window.ethereum.request({method:'eth_accounts'});
+      if(accounts && accounts.length){
+        const p = new ethers.BrowserProvider(window.ethereum);
+        const s = await p.getSigner();
+        const a = await s.getAddress();
+        window._walletProvider = p;
+        window._walletSigner   = s;
+        window._walletAddress  = a;
+        setWalletUI(a);
+      }
+    } catch(e){ console.error(e); }
+
+    window.ethereum.on('accountsChanged', async function(accs){
+      if(accs && accs.length){
+        const p = new ethers.BrowserProvider(window.ethereum);
+        const s = await p.getSigner();
+        window._walletProvider = p;
+        window._walletSigner   = s;
+        window._walletAddress  = accs[0];
         setWalletUI(accs[0]);
       } else {
-        window._walletProvider=null; window._walletSigner=null; window._walletAddress=null;
+        window._walletProvider = null;
+        window._walletSigner   = null;
+        window._walletAddress  = null;
         setWalletUI(null);
       }
     });
