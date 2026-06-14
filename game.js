@@ -116,30 +116,55 @@ async function deployContract() {
 
 async function submitScoreOnChain(points, secs) {
   if (!wallet) return;
+
   const txEl   = document.getElementById("tx-status");
   const doneEl = document.getElementById("tx-done");
   const msgEl  = document.getElementById("tx-msg");
   const linkEl = document.getElementById("tx-link");
+
+  // Reset UI
   if (txEl)   txEl.classList.remove("hidden");
   if (doneEl) doneEl.classList.add("hidden");
+  if (msgEl)  msgEl.textContent = "Confirm deploy in wallet…";
+
   try {
-    if (!contract) {
-      if (msgEl) msgEl.textContent = "Deploying contract…";
-      await deployContract();
-    }
-    if (!contract) throw new Error("Contract not available");
-    if (msgEl) msgEl.textContent = "Submitting score to Base…";
+    // ── Step 1: Deploy a fresh contract for this game ──
+    const factory  = new ethers.ContractFactory(CONTRACT_ABI, CONTRACT_BYTECODE, wallet.signer);
+    const deployed = await factory.deploy({ gasLimit: 1_500_000n });
+
+    if (msgEl) msgEl.textContent = "Deploying on Base…";
+    await deployed.waitForDeployment();
+
+    const addr   = await deployed.getAddress();
+    contractAddr = addr;
+    contract     = deployed;
+    localStorage.setItem("br_contract", addr);
+
+    // ── Step 2: Submit score on the freshly deployed contract ──
+    if (msgEl) msgEl.textContent = "Submitting score…";
     const tx = await contract.submitScore(BigInt(points), BigInt(secs), { gasLimit: 200_000n });
     await tx.wait(1);
+
+    // ── Success ──
     if (txEl)   txEl.classList.add("hidden");
     if (doneEl) doneEl.classList.remove("hidden");
     if (linkEl) {
-      linkEl.href        = `${BASESCAN}/address/${contractAddr}`;
-      linkEl.textContent = `Contract: ${contractAddr.slice(0,6)}…${contractAddr.slice(-4)}`;
+      linkEl.href        = `${BASESCAN}/tx/${tx.hash}`;
+      linkEl.textContent = `Tx: ${tx.hash.slice(0,8)}…${tx.hash.slice(-6)}`;
     }
+
   } catch(err) {
     if (txEl) txEl.classList.add("hidden");
-    if (err.code !== 4001) console.error("submitScore error:", err);
+
+    // User rejected — show a quiet message, don't crash
+    if (err.code === 4001 || err.code === "ACTION_REJECTED") {
+      if (msgEl) msgEl.textContent = "Transaction rejected.";
+      if (txEl)  txEl.classList.remove("hidden");
+      // Auto-hide after 3s
+      setTimeout(() => { if (txEl) txEl.classList.add("hidden"); }, 3000);
+    } else {
+      console.error("submitScoreOnChain error:", err);
+    }
   }
 }
 
