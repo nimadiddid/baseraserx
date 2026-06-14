@@ -11,24 +11,13 @@ const SPEED_STEP     = 35;
 const SPAWN_BASE     = 1.6;
 
 const CONTRACT_ABI = [
-  { name:"submitScore", type:"function", stateMutability:"nonpayable",
-    inputs:[{name:"points",type:"uint256"},{name:"timeSeconds",type:"uint256"}], outputs:[] },
-  { name:"bestScore", type:"function", stateMutability:"view",
-    inputs:[{name:"player",type:"address"}],
-    outputs:[{name:"points",type:"uint256"},{name:"timeSeconds",type:"uint256"},
-             {name:"timestamp",type:"uint256"},{name:"gameNumber",type:"uint256"}] },
-  { name:"gamesPlayed", type:"function", stateMutability:"view",
-    inputs:[{name:"player",type:"address"}], outputs:[{name:"",type:"uint256"}] },
-  { name:"getLeaderboard", type:"function", stateMutability:"view",
-    inputs:[{name:"n",type:"uint256"}],
-    outputs:[{name:"addrs",type:"address[]"},{name:"points",type:"uint256[]"},{name:"times",type:"uint256[]"}] },
-  { name:"ScoreSubmitted", type:"event",
-    inputs:[{name:"player",type:"address",indexed:true},{name:"points",type:"uint256",indexed:false},
-            {name:"timeSeconds",type:"uint256",indexed:false},{name:"gameNumber",type:"uint256",indexed:false},
-            {name:"isNewBest",type:"bool",indexed:false}] }
+  { name:"submitScore", type:"function", stateMutability:"nonpayable", inputs:[{name:"points",type:"uint256"},{name:"timeSeconds",type:"uint256"}], outputs:[] },
+  { name:"bestScore", type:"function", stateMutability:"view", inputs:[{name:"player",type:"address"}], outputs:[{name:"points",type:"uint256"},{name:"timeSeconds",type:"uint256"},{name:"timestamp",type:"uint256"},{name:"gameNumber",type:"uint256"}] },
+  { name:"gamesPlayed", type:"function", stateMutability:"view", inputs:[{name:"player",type:"address"}], outputs:[{name:"",type:"uint256"}] },
+  { name:"getLeaderboard", type:"function", stateMutability:"view", inputs:[{name:"n",type:"uint256"}], outputs:[{name:"addrs",type:"address[]"},{name:"points",type:"uint256[]"},{name:"times",type:"uint256[]"}] },
+  { name:"ScoreSubmitted", type:"event", inputs:[{name:"player",type:"address",indexed:true},{name:"points",type:"uint256",indexed:false},{name:"timeSeconds",type:"uint256",indexed:false},{name:"gameNumber",type:"uint256",indexed:false},{name:"isNewBest",type:"bool",indexed:false}] }
 ];
 
-// Bytecode for BaseRacerScoreBoard.sol (solc 0.8.20, optimizer 200 runs)
 const CONTRACT_BYTECODE = "0x608060405234801561001057600080fd5b50610b3f806100206000396000f3fe608060405234801561001057600080fd5b50600436106100575760003560e01c806304c0ae041461005c57806318c4f5a21461008957806348e74543146100a45780636d4ce63c146100c5578063b07c41bf146100e6575b600080fd5b61006f61006a366004610881565b610107565b604051610080949392919061089a565b60405180910390f35b6100a2610097366004610881565b610141565b005b6100b76100b23660046108d4565b6102d7565b6040516100809392919061090e565b6100d86100d3366004610881565b61044c565b604051908152602001610080565b6100f96100f43660046108d4565b61045e565b60405161008092919061093a565b60006020819052908152604090208054600182015460028301546003909301549192909184565b336000908152602081905260409020600301546000036101785760038054600181019091556000908152600460205260409020805433600160a060020a031916179055505b33600090815260208190526040812060038054919261019691610958565b905060405180608001604052808381526020018381526020014281526020018581525090508060008054906101000a9004600160a060020a0316600160a060020a03166001600160a01b0316336001600160a01b031614156101f5575050565b33600160a060020a031660009081526020819052604090205481111561025a5733600160a060020a03166000908152602081905260409020819055604051339082907f5a9d7a8e6c2b5f8e1d3c4a7b9e2f5c8d1a4b7e3f6c9d2a5b8e1f4c7d0a3b6e960405160405180910390a35b604051339082907fb1cb476b1a5b9e8d3c2a7f4e1b8d5c0a9f6e3b0d7c4a1b8f5e2c9d6a3b0e7c460405160405180910390a3505050565b60606000806000806003548767ffffffffffffffff8111156102fb576102fb610975565b60405190808252806020026020018201604052801561032e57816020015b60608152602001906001900390816103195790505b509350878510610340578795506103445760009550505b60005b8681101561043e5760006004600060038381548110610368576103688061098b565b60009182526020808320909101546001600160a01b031683528201929092526040018120549091508a1161039c578792505b6001600160a01b031660009081526020819052604090205484106103c2578192508391505b8281106103d057806103d2565b815b935050508181106103e6578093508192505b80600460006003858154811061040057610400806109ab565b60009182526020808320909101546001600160a01b031683528201929092526040018120919091555081019050610347565b505050505050509392505050565b6001600160a01b031660009081526001602052604090205490565b606060008067ffffffffffffffff81111561047b5761047b610975565b6040519080825280602002602001820160405280156104a4578160200160200181029003820190505b5090506000805b600354811015610507576000600482600381548110610482576104826109cb565b60009182526020808320909101546001600160a01b0316835282019290925260400190205411156104fc576001909101905b6001016104ab565b508067ffffffffffffffff81111561052157610521610975565b60405190808252806020026020018201604052801561054a578160200181029003820190505b5093508067ffffffffffffffff81111561056657610566610975565b60405190808252806020026020018201604052801561058f578160200181029003820190505b5092508067ffffffffffffffff8111156105ab576105ab610975565b6040519080825280602002602001820160405280156105d4578160200181029003820190505b50915060005b8181101561074c57600354811015610744576000806000806000806000806004600060038b8154811061060f5761060f6109eb565b60009182526020808320909101546001600160a01b031683528201929092526040018120548a8110610643578095508394505b6001600160a01b0316600090815260208190526040902054878110610669578096508395505b8087106106a2576003898154811061068357610683610a0b565b60009182526020909120015480891061069e578098508799505b5050505b80881461072457600380548a9081106106be576106be610a2b565b906000526020600020015460038a8154811061067657610676610a4b565b506001600160a01b039081166000908152602081905260408082205492851682529020548110156107245780600386815481106107045761070476109a1565b60009182526020909120015588600388815481106106f2576106f2610a6b565b9060005260206000200155505b8060010190506105da565b505050505050505b60010161060f565b5060005b818110156107c657600381815481106107695761076961098b565b60009182526020808320909101546001600160a01b031683528281526040808420548985015260018085528285205492890152918452822054928601529054169083018190526001016107505b50505050509250925092565b6001600160a01b03811681146107e657600080fd5b50565b6000602082840312156107fc57600080fd5b8135610807816107d2565b9392505050565b6000806040838503121561082157600080fd5b823561082c816107d2565b946020939093013593505050565b600080600060608486031215610856576108568061084f565b600080fd5b6000806040838503121561086e57600080fd5b50508035926020909101359150565b60006020828403121561088f5761088f80610889565b5b60006108a184356107d2565b60006020828403121561089357600080fd5b81356108a0816107d2565b9392505050565b60808101818360005b60048110156108d1578151835260209283019290910190600101610476565b50505092915050565b6000602082840312156108e657600080fd5b5035919050565b6000815180845260005b818110156109125760208185018101518683018201520161090a565b50600060208285010152601f01601f19169290920160200192915050565b606081526000610943606083018661089d565b828103602084015261095581866108ed565b9050828103604084015261096981856108ed565b98975050505050505050565b634e487b7160e01b600052604160045260246000fd5b634e487b7160e01b600052603260045260246000fd5b634e487b7160e01b600052603260045260246000fdfea264697066735822122012a4b6c8d0e2f4a6b8c0d2e4f6a8b0c2d4e6f8a0b2c4d6e8f0a2b4c6d8e0f2a264736f6c63430008140033";
 
 let wallet       = null;
@@ -65,7 +54,9 @@ const hudTime   = document.getElementById("hud-time");
 const healthBar = document.getElementById("health-bar");
 
 function showScreen(id) {
-  Object.entries(screens).forEach(([k,el]) => el.classList.toggle("active", k === id));
+  Object.entries(screens).forEach(([k,el]) => {
+    if(el) el.classList.toggle("active", k === id);
+  });
 }
 
 (function buildSpeedLines() {
@@ -132,7 +123,7 @@ async function deployContract() {
   if (msgEl) { msgEl.textContent = "Deploying scoreboard contract…"; }
   try {
     const factory = new ethers.ContractFactory(CONTRACT_ABI, CONTRACT_BYTECODE, wallet.signer);
-    const c       = await factory.deploy({ gasLimit: 1_500_000n });
+    const c       = await factory.deploy({ gasLimit: 1500000n });
     if (msgEl) msgEl.textContent = "Waiting for confirmation…";
     await c.waitForDeployment();
     contractAddr = await c.getAddress();
@@ -157,7 +148,7 @@ async function submitScoreOnChain(points, secs) {
     if (!contract) await deployContract();
     if (!contract) throw new Error("Contract unavailable");
     if (msgEl) msgEl.textContent = "Confirm in wallet…";
-    const tx = await contract.submitScore(BigInt(points), BigInt(secs), { gasLimit: 200_000n });
+    const tx = await contract.submitScore(BigInt(points), BigInt(secs), { gasLimit: 200000n });
     if (msgEl) msgEl.textContent = "Broadcasting…";
     await tx.wait(1);
     if (txEl)   txEl.classList.add("hidden");
@@ -165,7 +156,7 @@ async function submitScoreOnChain(points, secs) {
     if (linkEl) linkEl.href = `${BASESCAN}/tx/${tx.hash}`;
     await refreshChainStats();
   } catch(err) {
-    if (txEl) txEl.classList.add("hidden");
+    if (txEl)   txEl.classList.add("hidden");
     if (err.code !== 4001) console.error("submitScore error:", err);
   }
 }
@@ -196,9 +187,12 @@ function saveData() {
   localStorage.setItem(storeKey(wallet.address), JSON.stringify({ b:bestScore, g:gamesPlayed }));
 }
 function updateStartScreen() {
-  document.getElementById("wallet-address-display").textContent = wallet.address.slice(0,6)+"…"+wallet.address.slice(-4);
-  document.getElementById("best-score-display").textContent     = bestScore;
-  document.getElementById("games-played-display").textContent   = gamesPlayed;
+  const addrDisp = document.getElementById("wallet-address-display");
+  const scoreDisp = document.getElementById("best-score-display");
+  const playedDisp = document.getElementById("games-played-display");
+  if(addrDisp) addrDisp.textContent = wallet.address.slice(0,6)+"…"+wallet.address.slice(-4);
+  if(scoreDisp) scoreDisp.textContent     = bestScore;
+  if(playedDisp) playedDisp.textContent   = gamesPlayed;
 }
 
 function resize() {
@@ -259,8 +253,11 @@ function startGame() {
   score=0; elapsed=0; roadOffset=0; bgOffset=0;
   opponents=[]; particles=[]; spawnTimer=0;
   currentSpeed=BASE_SPEED; speedLevel=0; flashTimer=0; shakeMag=0;
-  lastTs=performance.now(); gameRunning=true;
-  resize(); updateHUD();
+  showScreen("game");
+  resize();
+  lastTs=performance.now(); 
+  gameRunning=true;
+  updateHUD();
   requestAnimationFrame(tick);
 }
 
@@ -322,8 +319,7 @@ const CAR_PALETTES = [
 function spawnOpponent() {
   const lane    = lanes[Math.floor(Math.random()*LANE_COUNT)];
   const palette = CAR_PALETTES[Math.floor(Math.random()*CAR_PALETTES.length)];
-  opponents.push({ x:lane.cx-playerW/2, y:-playerH-Math.random()*60, w:playerW, h:playerH,
-                   speed:currentSpeed*(.55+Math.random()*.75), palette });
+  opponents.push({ x:lane.cx-playerW/2, y:-playerH-Math.random()*60, w:playerW, h:playerH, speed:currentSpeed*(.55+Math.random()*.75), palette });
 }
 
 function render() {
@@ -356,7 +352,7 @@ function drawBackground(W,H) {
   ctx.beginPath(); ctx.moveTo(0,BH);
   for (const [bx,bh] of buildings) ctx.lineTo(bx*W,BH*(1-bh*.4));
   ctx.lineTo(W,BH); ctx.closePath(); ctx.fill();
-  for (let i=0;i<60;i++) {
+  for (let i=0; i<60; i++) {
     const wx=(i*137.5)%W, wy=BH*.1+(i*53.7)%(BH*.55);
     const alpha=.3+.5*Math.abs(Math.sin(elapsed*1.3+i));
     ctx.fillStyle=`rgba(${[[0,120,255],[255,200,0],[0,220,180],[180,80,255]][i%4].join(",")},${alpha})`;
@@ -377,7 +373,7 @@ function drawRoad(W,H) {
   sheen.addColorStop(0,"rgba(0,50,120,.12)"); sheen.addColorStop(.35,"rgba(0,30,80,.05)"); sheen.addColorStop(1,"rgba(0,0,0,0)");
   ctx.fillStyle=sheen; ctx.fillRect(0,H*.20,W,H*.80);
   const laneW=W/LANE_COUNT, rw=laneW*.10, blockH=28;
-  for (let y=-(roadOffset%blockH);y<H;y+=blockH) {
+  for (let y=-(roadOffset%blockH); y<H; y+=blockH) {
     const odd=Math.floor(y/blockH)%2===0;
     ctx.fillStyle=odd?"rgba(230,30,30,.90)":"rgba(245,245,245,.90)"; ctx.fillRect(0,y,rw,blockH-1);
     ctx.fillStyle=odd?"rgba(245,245,245,.90)":"rgba(230,30,30,.90)"; ctx.fillRect(W-rw,y,rw,blockH-1);
@@ -391,21 +387,21 @@ function drawRoad(W,H) {
   ctx.fillStyle="rgba(180,130,0,.25)"; ctx.fillRect(cx-4.5,0,9,H);
   const dashH=120*.52, gapH=120-dashH;
   ctx.strokeStyle="rgba(230,230,230,.78)"; ctx.lineWidth=2; ctx.setLineDash([dashH,gapH]);
-  for (let i=1;i<LANE_COUNT;i++) {
+  for (let i=1; i<LANE_COUNT; i++) {
     const lx=i*laneW;
     if (Math.abs(lx-cx)<8) continue;
     ctx.lineDashOffset=-roadOffset; ctx.beginPath(); ctx.moveTo(lx,0); ctx.lineTo(lx,H); ctx.stroke();
   }
   ctx.setLineDash([]);
   ctx.strokeStyle="rgba(255,255,255,.28)"; ctx.lineWidth=1;
-  for (let y=-(roadOffset%140);y<H;y+=140) {
+  for (let y=-(roadOffset%140); y<H; y+=140) {
     ctx.beginPath(); ctx.moveTo(rw+2,y); ctx.lineTo(rw+16,y); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(W-rw-2,y); ctx.lineTo(W-rw-16,y); ctx.stroke();
   }
   ctx.fillStyle="rgba(255,240,180,.65)";
-  for (let i=0;i<LANE_COUNT;i++) {
+  for (let i=0; i<LANE_COUNT; i++) {
     const lx=lanes[i].cx;
-    for (let y=-(roadOffset%80);y<H;y+=80) {
+    for (let y=-(roadOffset%80); y<H; y+=80) {
       ctx.save(); ctx.shadowColor="rgba(255,220,100,.8)"; ctx.shadowBlur=5;
       ctx.beginPath(); ctx.arc(lx,y,2.5,0,Math.PI*2); ctx.fill(); ctx.restore();
     }
@@ -424,7 +420,8 @@ function drawCarShadow(x,y,w,h) {
   const cx=x+w/2;
   const grad=ctx.createRadialGradient(cx,y+h*.92,0,cx,y+h*.92,w*.72);
   grad.addColorStop(0,"rgba(0,0,0,.55)"); grad.addColorStop(.6,"rgba(0,0,0,.20)"); grad.addColorStop(1,"rgba(0,0,0,0)");
-  ctx.fillStyle=grad; ctx.scale(1,.32);
+  ctx.scale(1,.32);
+  ctx.fillStyle=grad;
   ctx.beginPath(); ctx.ellipse(cx,(y+h*.92)/.32,w*.72,h*.38,0,0,Math.PI*2); ctx.fill();
   ctx.restore();
 }
@@ -434,12 +431,12 @@ function drawCar(x,y,w,h,pal,isPlayer) {
   ctx.save();
   function poly(pts,style) {
     ctx.fillStyle=style; ctx.beginPath(); ctx.moveTo(pts[0][0],pts[0][1]);
-    for (let i=1;i<pts.length;i++) ctx.lineTo(pts[i][0],pts[i][1]);
+    for (let i=1; i<pts.length; i++) ctx.lineTo(pts[i][0],pts[i][1]);
     ctx.closePath(); ctx.fill();
   }
   function polyStroke(pts,style,lw) {
     ctx.strokeStyle=style; ctx.lineWidth=lw; ctx.beginPath(); ctx.moveTo(pts[0][0],pts[0][1]);
-    for (let i=1;i<pts.length;i++) ctx.lineTo(pts[i][0],pts[i][1]);
+    for (let i=1; i<pts.length; i++) ctx.lineTo(pts[i][0],pts[i][1]);
     ctx.closePath(); ctx.stroke();
   }
   const X=f=>cx+f*w, Y=f=>y+f*h;
@@ -459,8 +456,7 @@ function drawCar(x,y,w,h,pal,isPlayer) {
   const rwy=Y(.77);
   const rwg=ctx.createLinearGradient(X(0),rwy,X(0),rwy+h*.06);
   rwg.addColorStop(0,lighten(pal.body,.1)); rwg.addColorStop(1,pal.dark);
-  poly([[X(-.56),rwy+h*.055],[X(-.56),rwy+h*.015],[X(-.22),rwy],[X(.22),rwy],
-        [X(.56),rwy+h*.015],[X(.56),rwy+h*.055],[X(.22),rwy+h*.042],[X(-.22),rwy+h*.042]],rwg);
+  poly([[X(-.56),rwy+h*.055],[X(-.56),rwy+h*.015],[X(-.22),rwy],[X(.22),rwy],[X(.56),rwy+h*.015],[X(.56),rwy+h*.055],[X(.22),rwy+h*.042],[X(-.22),rwy+h*.042]],rwg);
   ctx.fillStyle=pal.dark;
   ctx.fillRect(X(-.155),rwy+h*.042,w*.06,h*.038); ctx.fillRect(X(.095),rwy+h*.042,w*.06,h*.038);
   ctx.fillStyle=pal.accent; ctx.globalAlpha=.55;
@@ -483,11 +479,9 @@ function drawCar(x,y,w,h,pal,isPlayer) {
   poly([[poFR-w*.03,podFY+h*.05],[poFR-w*.03,podFY+h*.14],[poFR-w*.10,podFY+h*.14],[poFR-w*.12,podFY+h*.05]],"rgba(0,0,0,.75)");
 
   const bRW=w*.28, bMW=w*.25, bFW=w*.13, bNT=w*.035;
-  const fp=[[cx-bRW,Y(.74)],[cx-bMW,Y(.44)],[cx-bFW,Y(.16)],[cx-bNT,Y(.01)],
-             [cx+bNT,Y(.01)],[cx+bFW,Y(.16)],[cx+bMW,Y(.44)],[cx+bRW,Y(.74)]];
+  const fp=[[cx-bRW,Y(.74)],[cx-bMW,Y(.44)],[cx-bFW,Y(.16)],[cx-bNT,Y(.01)],[cx+bNT,Y(.01)],[cx+bFW,Y(.16)],[cx+bMW,Y(.44)],[cx+bRW,Y(.74)]];
   const fg=ctx.createLinearGradient(cx-bRW,0,cx+bRW,0);
-  fg.addColorStop(0,pal.dark); fg.addColorStop(.18,pal.body); fg.addColorStop(.42,lighten(pal.body,.30));
-  fg.addColorStop(.55,lighten(pal.body,.15)); fg.addColorStop(.75,pal.body); fg.addColorStop(1,pal.dark);
+  fg.addColorStop(0,pal.dark); fg.addColorStop(.18,pal.body); fg.addColorStop(.42,lighten(pal.body,.30)); fg.addColorStop(.55,lighten(pal.body,.15)); fg.addColorStop(.75,pal.body); fg.addColorStop(1,pal.dark);
   poly(fp,fg);
   ctx.save(); ctx.globalAlpha=.28; polyStroke(fp,lighten(pal.body,.55),1); ctx.globalAlpha=1; ctx.restore();
   poly([[cx-bRW,Y(.74)],[cx-bMW,Y(.44)],[cx-bFW,Y(.16)],[cx-w*.20,Y(.16)],[cx-w*.18,Y(.44)],[cx-w*.22,Y(.74)]],"rgba(0,0,0,.18)");
@@ -501,10 +495,7 @@ function drawCar(x,y,w,h,pal,isPlayer) {
   ctx.moveTo(cx-czW*.55,czY+czH); ctx.bezierCurveTo(cx-czW*.62,czY+czH*.6,cx-czW*.45,czY,cx,czY-h*.012);
   ctx.bezierCurveTo(cx+czW*.45,czY,cx+czW*.62,czY+czH*.6,cx+czW*.55,czY+czH); ctx.closePath(); ctx.fill();
   const gg=ctx.createRadialGradient(cx-czW*.15,czY+czH*.22,czH*.04,cx,czY+czH*.5,czH*.5);
-  gg.addColorStop(0,"rgba(180,210,255,.75)");
-  gg.addColorStop(.3,isPlayer?"rgba(30,80,200,.70)":"rgba(15,15,40,.80)");
-  gg.addColorStop(.75,isPlayer?"rgba(5,20,100,.88)":"rgba(5,5,20,.90)");
-  gg.addColorStop(1,"rgba(0,0,0,.95)");
+  gg.addColorStop(0,"rgba(180,210,255,.75)"); gg.addColorStop(.3,isPlayer?"rgba(30,80,200,.70)":"rgba(15,15,40,.80)"); gg.addColorStop(.75,isPlayer?"rgba(5,20,100,.88)":"rgba(5,5,20,.90)"); gg.addColorStop(1,"rgba(0,0,0,.95)");
   ctx.fillStyle=gg; ctx.beginPath();
   ctx.moveTo(cx-czW*.44,czY+czH); ctx.bezierCurveTo(cx-czW*.50,czY+czH*.6,cx-czW*.35,czY+h*.01,cx,czY+h*.005);
   ctx.bezierCurveTo(cx+czW*.35,czY+h*.01,cx+czW*.50,czY+czH*.6,cx+czW*.44,czY+czH); ctx.closePath(); ctx.fill();
@@ -514,11 +505,9 @@ function drawCar(x,y,w,h,pal,isPlayer) {
   ctx.fillStyle=spec; ctx.beginPath();
   ctx.ellipse(cx-czW*.18,czY+czH*.18,czW*.28,czH*.20,-0.4,0,Math.PI*2); ctx.fill(); ctx.restore();
   ctx.save(); ctx.strokeStyle="#0A0C14"; ctx.lineWidth=w*.05; ctx.lineCap="round";
-  ctx.beginPath(); ctx.moveTo(cx-czW*.42,czY+czH*.08);
-  ctx.bezierCurveTo(cx-czW*.30,czY-h*.02,cx+czW*.30,czY-h*.02,cx+czW*.42,czY+czH*.08);
+  ctx.beginPath(); ctx.moveTo(cx-czW*.42,czY+czH*.08); ctx.bezierCurveTo(cx-czW*.30,czY-h*.02,cx+czW*.30,czY-h*.02,cx+czW*.42,czY+czH*.08);
   ctx.stroke(); ctx.restore();
 
-  const fwY=Y(.0);
   const fwg=ctx.createLinearGradient(X(-.48),0,X(.48),0);
   fwg.addColorStop(0,pal.dark); fwg.addColorStop(.5,lighten(pal.body,.1)); fwg.addColorStop(1,pal.dark);
   poly([[cx-w*.01,Y(.02)],[cx-w*.27,Y(.02)],[cx-w*.48,Y(.06)],[cx-w*.46,Y(.10)],[cx-w*.24,Y(.07)],[cx-w*.01,Y(.055)]],fwg);
@@ -557,59 +546,42 @@ function drawWheel(x,y,w,h,pal) {
   ctx.fillStyle=tGrad; roundRect(x,y,w,h,w*.28); ctx.fill();
   const rp=w*.20, rimW=w-rp*2, rimH=h-rp*1.6;
   const rimGrad=ctx.createLinearGradient(x+rp,y+rp*.8,x+rp+rimW,y+rp*.8);
-  rimGrad.addColorStop(0,darken(pal.rim,.55)); rimGrad.addColorStop(.3,pal.rim);
-  rimGrad.addColorStop(.6,lighten(pal.rim,.15)); rimGrad.addColorStop(1,darken(pal.rim,.4));
+  rimGrad.addColorStop(0,darken(pal.rim,.55)); rimGrad.addColorStop(.3,pal.rim); rimGrad.addColorStop(.6,lighten(pal.rim,.15)); rimGrad.addColorStop(1,darken(pal.rim,.4));
   ctx.fillStyle=rimGrad; roundRect(x+rp,y+rp*.8,rimW,rimH,w*.10); ctx.fill();
   ctx.save(); ctx.translate(cx,cy); ctx.strokeStyle=darken(pal.rim,.3); ctx.lineWidth=w*.055;
-  for (let i=0;i<5;i++) { ctx.save(); ctx.rotate(i*Math.PI*2/5); ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(0,-h*.30); ctx.stroke(); ctx.restore(); }
+  for (let i=0; i<5; i++) {
+    ctx.save(); ctx.rotate(i*Math.PI/2.5); ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(0,-rimH/2); ctx.stroke(); ctx.restore();
+  }
   ctx.restore();
-  const hubGrad=ctx.createRadialGradient(cx-w*.04,cy-h*.04,0,cx,cy,w*.10);
-  hubGrad.addColorStop(0,"#888"); hubGrad.addColorStop(1,"#222");
-  ctx.fillStyle=hubGrad; ctx.beginPath(); ctx.arc(cx,cy,w*.10,0,Math.PI*2); ctx.fill();
-  ctx.strokeStyle="rgba(255,255,255,.08)"; ctx.lineWidth=w*.04;
-  ctx.beginPath(); ctx.arc(cx,cy,w*.44,-Math.PI*.7,-Math.PI*.1); ctx.stroke();
   ctx.restore();
 }
 
-function hexToRgb(hex) {
-  return [parseInt(hex.slice(1,3),16), parseInt(hex.slice(3,5),16), parseInt(hex.slice(5,7),16)];
+function hexA(hex, a) { return hex + Math.floor(a * 255).toString(16).padStart(2, '0'); }
+function lighten(hex, percent) { return adjustBrightness(hex, percent); }
+function darken(hex, percent) { return adjustBrightness(hex, -percent); }
+function adjustBrightness(hex, percent) {
+  let R = parseInt(hex.substring(1,3),16), G = parseInt(hex.substring(3,5),16), B = parseInt(hex.substring(5,7),16);
+  R = Math.min(255, Math.max(0, parseInt(R * (1 + percent))));
+  G = Math.min(255, Math.max(0, parseInt(G * (1 + percent))));
+  B = Math.min(255, Math.max(0, parseInt(B * (1 + percent))));
+  return `#${((1 << 24) + (R << 16) + (G << 8) + B).toString(16).slice(1)}`;
 }
-function hexA(hex,a) { const [r,g,b]=hexToRgb(hex); return `rgba(${r},${g},${b},${a})`; }
-function darken(hex,f) { const [r,g,b]=hexToRgb(hex); return `rgb(${Math.round(r*f)},${Math.round(g*f)},${Math.round(b*f)})`; }
-function lighten(hex,f) { const [r,g,b]=hexToRgb(hex); return `rgb(${Math.min(255,Math.round(r+(255-r)*f))},${Math.min(255,Math.round(g+(255-g)*f))},${Math.min(255,Math.round(b+(255-b)*f))})`; }
-function roundRect(x,y,w,h,r) {
-  r=Math.min(r,Math.abs(w)/2,Math.abs(h)/2); ctx.beginPath();
-  ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.arcTo(x+w,y,x+w,y+r,r);
-  ctx.lineTo(x+w,y+h-r); ctx.arcTo(x+w,y+h,x+w-r,y+h,r);
-  ctx.lineTo(x+r,y+h); ctx.arcTo(x,y+h,x,y+h-r,r);
-  ctx.lineTo(x,y+r); ctx.arcTo(x,y,x+r,y,r); ctx.closePath();
+function roundRect(x, y, w, h, r) {
+  ctx.beginPath(); ctx.moveTo(x+r, y); ctx.lineTo(x+w-r, y); ctx.quadraticCurveTo(x+w, y, x+w, y+r); ctx.lineTo(x+w, y+h-r); ctx.quadraticCurveTo(x+w, y+h, x+w-r, y+h); ctx.lineTo(x+r, y+h); ctx.quadraticCurveTo(x, y+h, x, y+h-r); ctx.lineTo(x, y+r); ctx.quadraticCurveTo(x, y, x+r, y); ctx.closePath();
 }
 
 function updateHUD() {
-  hudScore.textContent=Math.floor(score); hudTime.textContent=Math.floor(elapsed)+"s";
-  const pct=Math.min(100,speedLevel/10*100);
-  healthBar.style.width=(8+pct*.92)+"%";
-  healthBar.style.background=flashTimer>0?"linear-gradient(90deg,#FF8C00,#FFD700)":`linear-gradient(90deg,#0052FF ${100-pct}%,#60A5FA)`;
+  if (hudScore) hudScore.textContent = Math.floor(score);
+  if (hudTime) hudTime.textContent = elapsed.toFixed(1) + "s";
 }
 
 function endGame() {
-  const fs=Math.floor(score), ss=Math.floor(elapsed);
-  gamesPlayed++; if (fs>bestScore) bestScore=fs; saveData();
-  document.getElementById("final-score").textContent=fs;
-  document.getElementById("go-time").textContent=ss+"s";
-  document.getElementById("go-best").textContent=bestScore;
-  document.getElementById("tx-status").classList.add("hidden");
-  document.getElementById("tx-done").classList.add("hidden");
   showScreen("gameover");
-  submitScoreOnChain(fs, ss);
+  const finalScoreEl = document.getElementById("final-score");
+  if(finalScoreEl) finalScoreEl.textContent = Math.floor(score);
+  submitScoreOnChain(Math.floor(score), Math.floor(elapsed));
 }
 
-document.getElementById("btn-connect").addEventListener("click", connectWallet);
-document.getElementById("btn-start").addEventListener("click", ()=>{ showScreen("game"); startGame(); });
-document.getElementById("btn-disconnect").addEventListener("click", ()=>{ wallet=null; contract=null; showScreen("connect"); });
-document.getElementById("btn-play-again").addEventListener("click", ()=>{ showScreen("game"); startGame(); });
-document.getElementById("btn-to-menu").addEventListener("click", ()=>{ updateStartScreen(); showScreen("start"); });
-
-resize();
-showScreen("connect");
-
+document.getElementById("btn-connect")?.addEventListener("click", connectWallet);
+document.getElementById("btn-start")?.addEventListener("click", startGame);
+document.getElementById("btn-restart")?.addEventListener("click", () => { showScreen("start"); });
