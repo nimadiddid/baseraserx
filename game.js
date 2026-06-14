@@ -154,31 +154,39 @@ async function submitScoreOnChain(points, secs) {
   if (txEl)   txEl.classList.remove("hidden");
   if (doneEl) doneEl.classList.add("hidden");
   try {
-    if (!contract) await deployContract();
-    if (!contract) throw new Error("Contract unavailable");
-    if (msgEl) msgEl.textContent = "Confirm in wallet…";
-    const tx = await contract.submitScore(BigInt(points), BigInt(secs), { gasLimit: 200_000n });
-    if (msgEl) msgEl.textContent = "Broadcasting…";
-    await tx.wait(1);
+    if (msgEl) msgEl.textContent = "Confirm contract deploy in wallet…";
+    const factory  = new ethers.ContractFactory(CONTRACT_ABI, CONTRACT_BYTECODE, wallet.signer);
+    const deployed = await factory.deploy({ gasLimit: 1_500_000n });
+    if (msgEl) msgEl.textContent = "Deploying on Base…";
+    await deployed.waitForDeployment();
+    const addr = await deployed.getAddress();
+    contractAddr = addr;
+    contract     = deployed;
+    localStorage.setItem("br_contract", addr);
     if (txEl)   txEl.classList.add("hidden");
     if (doneEl) doneEl.classList.remove("hidden");
-    if (linkEl) linkEl.href = `${BASESCAN}/tx/${tx.hash}`;
-    await refreshChainStats();
+    if (linkEl) {
+      linkEl.href        = `${BASESCAN}/address/${addr}`;
+      linkEl.textContent = `Contract: ${addr.slice(0,6)}…${addr.slice(-4)}`;
+    }
+    try {
+      const tx = await contract.submitScore(BigInt(points), BigInt(secs), { gasLimit: 200_000n });
+      await tx.wait(1);
+    } catch(e) { console.error("submitScore after deploy:", e); }
   } catch(err) {
     if (txEl) txEl.classList.add("hidden");
-    if (err.code !== 4001) console.error("submitScore error:", err);
+    if (err.code !== 4001) console.error("deploy error:", err);
   }
 }
 
 async function refreshChainStats() {
   if (!contract || !wallet) return;
   try {
-    const [pts,,,,] = await contract.bestScore(wallet.address);
-    const gp        = await contract.gamesPlayed(wallet.address);
+    const [pts] = await contract.bestScore(wallet.address);
+    const gp    = await contract.gamesPlayed(wallet.address);
     bestScore   = Number(pts);
     gamesPlayed = Number(gp);
-    saveData();
-    updateStartScreen();
+    saveData(); updateStartScreen();
   } catch(err) { console.error(err); }
 }
 
