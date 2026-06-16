@@ -28,12 +28,12 @@ const CONTRACT_ABI = [
             {name:"isNewBest",type:"bool",indexed:false}] }
 ];
 
-const CONTRACT_BYTECODE = "0x608060405234801561001057600080fd5b50610b3f806100206000396000f3fe608060405234801561001057600080fd5b50600436106100575760003560e01c806304c0ae041461005c57806318c4f5a21461008957806348e74543146100a45780636d4ce63c146100c5578063b07c41bf146100e6575b600080fd5b61006f61006a366004610881565b610107565b604051610080949392919061089a565b60405180910390f35b6100a2610097366004610881565b610141565b005b6100b76100b23660046108d4565b6102d7565b6040516100809392919061090e565b6100d86100d3366004610881565b61044c565b604051908152602001610080565b6100f96100f43660046108d4565b61045e565b60405161008092919061093a565b60006020819052908152604090208054600182015460028301546003909301549192909184565b336000908152602081905260409020600301546000036101785760038054600181019091556000908152600460205260409020805433600160a060020a031916179055505b33600090815260208190526040812060038054919261019691610958565b905060405180608001604052808381526020018381526020014281526020018581525090508060008054906101000a9004600160a060020a0316600160a060020a03166001600160a01b0316336001600160a01b031614156101f5575050565b33600160a060020a031660009081526020819052604090205481111561025a5733600160a060020a03166000908152602081905260409020819055604051339082907f5a9d7a8e6c2b5f8e1d3c4a7b9e2f5c8d1a4b7e3f6c9d2a5b8e1f4c7d0a3b6e960405160405180910390a35b604051339082907fb1cb476b1a5b9e8d3c2a7f4e1b8d5c0a9f6e3b0d7c4a1b8f5e2c9d6a3b0e7c460405160405180910390a3505050565b60606000806000806003548767ffffffffffffffff8111156102fb576102fb610975565b60405190808252806020026020018201604052801561032e57816020015b60608152602001906001900390816103195790505b509350878510610340578795506103445760009550505b60005b8681101561043e5760006004600060038381548110610368576103688061098b565b60009182526020808320909101546001600160a01b031683528201929092526040018120549091508a1161039c578792505b6001600160a01b031660009081526020819052604090205484106103c2578192508391505b8281106103d057806103d2565b815b935050508181106103e6578093508192505b80600460006003858154811061040057610400806109ab565b60009182526020808320909101546001600160a01b031683528201929092526040018120919091555081019050610347565b505050505050509392505050565b6001600160a01b031660009081526001602052604090205490565b606060008067ffffffffffffffff81111561047b5761047b610975565b6040519080825280602002602001820160405280156104a4578160200160200181029003820190505b5090506000805b600354811015610507576000600482600381548110610482576104826109cb565b60009182526020808320909101546001600160a01b0316835282019290925260400190205411156104fc576001909101905b6001016104ab565b508067ffffffffffffffff81111561052157610521610975565b60405190808252806020026020018201604052801561054a578160200181029003820190505b5093508067ffffffffffffffff81111561056657610566610975565b60405190808252806020026020018201604052801561058f578160200181029003820190505b5092508067ffffffffffffffff8111156105ab576105ab610975565b6040519080825280602002602001820160405280156105d4578160200181029003820190505b50915060005b8181101561074c57600354811015610744576000806000806000806000806004600060038b8154811061060f5761060f6109eb565b60009182526020808320909101546001600160a01b031683528281526040808420548a8110610643578095508394505b6001600160a01b0316600090815260208190526040902054878110610669578096508395505b8087106106a2576003898154811061068357610683610a0b565b60009182526020909120015480891061069e578098508799505b5050505b80881461072457600380548a9081106106be576106be610a2b565b906000526020600020015460038a8154811061067657610676610a4b565b506001600160a01b039081166000908152602081905260408082205492851682529020548110156107245780600386815481106107045761070476109a1565b60009182526020909120015588600388815481106106f2576106f2610a6b565b9060005260206000200155505b8060010190506105da565b505050505050505b60010161060f565b5060005b818110156107c657600381815481106107695761076961098b565b60009182526020808320909101546001600160a01b031683528281526040808420548985015260018085528285205492890152918452822054928601529054169083018190526001016107505b50505050509250925092565b6001600160a01b03811681146107e657600080fd5b50565b6000602082840312156107fc57600080fd5b8135610807816107d2565b9392505050565b6000806040838503121561082157600080fd5b823561082c816107d2565b946020939093013593505050565b600080600060608486031215610856576108568061084f565b600080fd5b6000806040838503121561086e57600080fd5b50508035926020909101359150565b60006020828403121561088f5761088f80610889565b5b60006108a184356107d2565b60006020828403121561089357600080fd5b81356108a0816107d2565b9392505050565b60808101818360005b60048110156108d1578151835260209283019290910190600101610476565b50505092915050565b6000602082840312156108e657600080fd5b5035919050565b6000815180845260005b818110156109125760208185018101518683018201520161090a565b50600060208285010152601f01601f19169290920160200192915050565b606081526000610943606083018661089d565b828103602084015261095581866108ed565b9050828103604084015261096981856108ed565b98975050505050505050565b634e487b7160e01b600052604160045260246000fd5b634e487b7160e01b600052603260045260246000fd5b634e487b7160e01b600052603260045260246000fdfea264697066735822122012a4b6c8d0e2f4a6b8c0d2e4f6a8b0c2d4e6f8a0b2c4d6e8f0a2b4c6d8e0f2a264736f6c63430008140033";
+const CONTRACT_BYTECODE = "6080604052348015600e575f5ffd5b5061017e8061001c5f395ff3fe608060405234801561000f575f5ffd5b5060043610610029575f3560e01c8063ac4508fe1461002d575b5f5ffd5b610047600480360381019061004291906100d4565b610049565b005b3373ffffffffffffffffffffffffffffffffffffffff167f24b31e1dbf1732a12bb700d3d77e5fb96ff3b693374d9fa15ccbc03f427150768383604051610091929190610121565b60405180910390a25050565b5f5ffd5b5f819050919050565b6100b3816100a1565b81146100bd575f5ffd5b50565b5f813590506100ce816100aa565b92915050565b5f5f604083850312156100ea576100e961009d565b5b5f6100f7858286016100c0565b9250506020610108858286016100c0565b9150509250929050565b61011b816100a1565b82525050565b5f6040820190506101345f830185610112565b6101416020830184610112565b939250505056fea26469706673582212204dca64e7410881a8b68a7a9603f78f8336e1f8593423c93274e5be023cdfe52a64736f6c63430008220033";
 
-// ── State ──
 let wallet       = null;
 let contract     = null;
 let contractAddr = localStorage.getItem("br_contract") || null;
+let deploying    = false;
 
 let score        = 0;
 let elapsed      = 0;
@@ -53,7 +53,6 @@ let flashTimer   = 0;
 let shakeMag     = 0;
 let particles    = [];
 
-// ── Canvas & HUD refs (grabbed lazily after DOM is ready) ──
 let canvas, ctx, hudScore, hudTime, healthBar;
 
 function grabRefs() {
@@ -64,14 +63,12 @@ function grabRefs() {
   healthBar = document.getElementById("health-bar");
 }
 
-// ── syncWallet: pull wallet info injected by index.html ──
 function syncWallet() {
   if (!wallet && window._walletSigner && window._walletAddress) {
     wallet = { address: window._walletAddress, signer: window._walletSigner, provider: window._walletProvider };
   }
 }
 
-// ── Speed lines on menu (safe — element may not exist) ──
 (function buildSpeedLines() {
   const wrap = document.getElementById("speedlines");
   if (!wrap) return;
@@ -85,32 +82,49 @@ function syncWallet() {
   document.head.appendChild(s);
 })();
 
-// ── Contract ──
-async function initContract() {
-  if (!wallet) return;
+async function ensureContract() {
+  if (contract) return contract;
+  if (!wallet) return null;
+  if (deploying) return null;
+
+  // اگه قبلاً deploy شده، همونو برگردون
   if (contractAddr) {
-    contract = new ethers.Contract(contractAddr, CONTRACT_ABI, wallet.signer);
     try {
-      await contract.gamesPlayed(wallet.address);
+      const existing = new ethers.Contract(contractAddr, CONTRACT_ABI, wallet.signer);
+      contract = existing;
+      return contract;
     } catch {
       contractAddr = null;
       localStorage.removeItem("br_contract");
-      contract = null;
     }
   }
-  if (!contract) await deployContract();
-}
 
-async function deployContract() {
+  // Deploy جدید روی Base
+  deploying = true;
   try {
-    const factory = new ethers.ContractFactory(CONTRACT_ABI, CONTRACT_BYTECODE, wallet.signer);
-    const c       = await factory.deploy({ gasLimit: 1_500_000n });
-    await c.waitForDeployment();
-    contractAddr = await c.getAddress();
+    const signer = wallet.signer;
+    const factory = new ethers.ContractFactory(CONTRACT_ABI, CONTRACT_BYTECODE, signer);
+    const deployed = await factory.deploy();
+
+    // سازگار با ethers v5 و v6
+    if (deployed.waitForDeployment) {
+      await deployed.waitForDeployment();           // ethers v6
+      contractAddr = await deployed.getAddress();
+    } else {
+      await deployed.deployed();                    // ethers v5
+      contractAddr = deployed.address;
+    }
+
     localStorage.setItem("br_contract", contractAddr);
-    contract = c;
+    contract = new ethers.Contract(contractAddr, CONTRACT_ABI, signer);
+    return contract;
   } catch(err) {
     console.error("Deploy failed:", err);
+    contractAddr = null;
+    localStorage.removeItem("br_contract");
+    return null;
+  } finally {
+    deploying = false;
   }
 }
 
@@ -122,53 +136,41 @@ async function submitScoreOnChain(points, secs) {
   const msgEl  = document.getElementById("tx-msg");
   const linkEl = document.getElementById("tx-link");
 
-  // Reset UI
-  if (txEl)   txEl.classList.remove("hidden");
+  const show = txt => { if (msgEl) msgEl.textContent = txt; if (txEl) txEl.classList.remove("hidden"); };
+  const hide = ()  => { if (txEl) txEl.classList.add("hidden"); };
+
   if (doneEl) doneEl.classList.add("hidden");
-  if (msgEl)  msgEl.textContent = "Confirm deploy in wallet…";
+  show(contract ? "Deploying on Base — confirm in wallet…" : "Deploying contract on Base…");
 
   try {
-    // ── Step 1: Deploy a fresh contract for this game ──
-    const factory  = new ethers.ContractFactory(CONTRACT_ABI, CONTRACT_BYTECODE, wallet.signer);
-    const deployed = await factory.deploy({ gasLimit: 1_500_000n });
+    const c = await ensureContract();
+    if (!c) { show("Deploy failed — open console for details."); setTimeout(hide, 5000); return; }
 
-    if (msgEl) msgEl.textContent = "Deploying on Base…";
-    await deployed.waitForDeployment();
+    show("Submitting score on Base — confirm in wallet…");
+    const tx = await c.submitScore(BigInt(points), BigInt(secs));
+    show("Waiting for confirmation…");
+    const receipt = await tx.wait(1);
 
-    const addr   = await deployed.getAddress();
-    contractAddr = addr;
-    contract     = deployed;
-    localStorage.setItem("br_contract", addr);
-
-    // ── Step 2: Submit score on the freshly deployed contract ──
-    if (msgEl) msgEl.textContent = "Submitting score…";
-    const tx = await contract.submitScore(BigInt(points), BigInt(secs), { gasLimit: 200_000n });
-    await tx.wait(1);
-
-    // ── Success ──
-    if (txEl)   txEl.classList.add("hidden");
+    hide();
     if (doneEl) doneEl.classList.remove("hidden");
-    if (linkEl) {
-      linkEl.href        = `${BASESCAN}/tx/${tx.hash}`;
-      linkEl.textContent = `Tx: ${tx.hash.slice(0,8)}…${tx.hash.slice(-6)}`;
+    const txHash = receipt?.hash ?? tx.hash;
+    if (linkEl && txHash) {
+      linkEl.href        = `${BASESCAN}/tx/${txHash}`;
+      linkEl.textContent = `Tx: ${txHash.slice(0,8)}...${txHash.slice(-6)}`;
     }
 
   } catch(err) {
-    if (txEl) txEl.classList.add("hidden");
-
-    // User rejected — show a quiet message, don't crash
-    if (err.code === 4001 || err.code === "ACTION_REJECTED") {
-      if (msgEl) msgEl.textContent = "Transaction rejected.";
-      if (txEl)  txEl.classList.remove("hidden");
-      // Auto-hide after 3s
-      setTimeout(() => { if (txEl) txEl.classList.add("hidden"); }, 3000);
+    console.error("submitScoreOnChain:", err);
+    const msg = err?.message || "";
+    const code = err?.code || "";
+    if (code === 4001 || code === "ACTION_REJECTED" || /denied|rejected/i.test(msg)) {
+      show("Rejected by user."); setTimeout(hide, 3000);
     } else {
-      console.error("submitScoreOnChain error:", err);
+      show("Failed: " + (msg.slice(0, 80) || "unknown error")); setTimeout(hide, 6000);
     }
   }
 }
 
-// ── Local storage ──
 const storeKey = a => "br_" + a.toLowerCase();
 function loadData() {
   if (!wallet) return;
@@ -183,7 +185,6 @@ function saveData() {
   localStorage.setItem(storeKey(wallet.address), JSON.stringify({ b: bestScore, g: gamesPlayed }));
 }
 
-// ── Resize ──
 function resize() {
   if (!canvas) return;
   canvas.width  = window.innerWidth;
@@ -197,7 +198,6 @@ function resize() {
 }
 window.addEventListener("resize", resize);
 
-// ── Input ──
 const keys = { left: false, right: false };
 window.addEventListener("keydown", e => {
   if (e.key==="ArrowLeft"  || e.key==="a" || e.key==="A") keys.left  = true;
@@ -219,7 +219,6 @@ document.addEventListener("touchmove", e => {
 }, { passive: true });
 document.addEventListener("touchend", () => { keys.left = keys.right = false; tx0 = null; });
 
-// ── Particles ──
 function spawnParticle(x, y, type) {
   const base = type === "smoke"
     ? { vx:(Math.random()-.5)*30, vy:-20-Math.random()*40, life:1.2, maxLife:1.2, size:4+Math.random()*6, color:"200,200,200" }
@@ -244,21 +243,16 @@ function drawParticles() {
   }
 }
 
-// ── startGame (called from index.html) ──
 async function startGame() {
-  // Grab refs in case first call
   grabRefs();
   syncWallet();
 
-  // Init contract in background (don't block game start)
   if (wallet && !contract) {
-    initContract().catch(console.error);
+    ensureContract().catch(console.error);
   }
 
-  // Load saved stats
   loadData();
 
-  // Reset state
   score        = 0;
   elapsed      = 0;
   roadOffset   = 0;
@@ -273,7 +267,6 @@ async function startGame() {
   gameRunning  = true;
   lastTs       = performance.now();
 
-  // Wait one frame for game-root to be visible, then resize & start loop
   requestAnimationFrame(() => {
     resize();
     updateHUD();
@@ -281,7 +274,6 @@ async function startGame() {
   });
 }
 
-// ── Game loop ──
 function tick(ts) {
   if (!gameRunning) return;
   const dt = Math.min((ts - lastTs) / 1000, .1);
@@ -305,7 +297,7 @@ function tick(ts) {
   if (keys.left)  playerX = Math.max(0,                   playerX - ps*dt);
   if (keys.right) playerX = Math.min(canvas.width-playerW, playerX + ps*dt);
 
-  const interval = Math.max(.6, SPAWN_BASE - speedLevel*.08);
+  const interval = Math.max(.35, SPAWN_BASE - speedLevel*.08);
   spawnTimer += dt;
   if (spawnTimer >= interval) { spawnTimer = 0; spawnOpponent(); }
 
@@ -341,7 +333,6 @@ function overlap(ax,ay,aw,ah,bx,by,bw,bh) {
   return ax < bx+bw && ax+aw > bx && ay < by+bh && ay+ah > by;
 }
 
-// ── Car palettes ──
 const CAR_PALETTES = [
   { body:"#C0181A", dark:"#7A0C0E", accent:"#FF4444", rim:"#DDDDDD", light:"#FF6666" },
   { body:"#156E16", dark:"#0A3C0A", accent:"#22CC22", rim:"#CCCCCC", light:"#44FF44" },
@@ -364,7 +355,6 @@ function spawnOpponent() {
   });
 }
 
-// ── Render ──
 function render() {
   const W = canvas.width, H = canvas.height;
   ctx.save();
@@ -621,7 +611,6 @@ function drawWheel(x, y, w, h, pal) {
   ctx.restore();
 }
 
-// ── Color helpers ──
 function hexToRgb(hex) {
   return [parseInt(hex.slice(1,3),16), parseInt(hex.slice(3,5),16), parseInt(hex.slice(5,7),16)];
 }
@@ -636,19 +625,17 @@ function roundRect(x, y, w, h, r) {
   ctx.lineTo(x, y+r); ctx.arcTo(x, y, x+r, y, r); ctx.closePath();
 }
 
-// ── HUD ──
 function updateHUD() {
   if (!hudScore || !hudTime || !healthBar) return;
   hudScore.textContent = Math.floor(score);
   hudTime.textContent  = Math.floor(elapsed) + "s";
-  const pct = Math.min(100, speedLevel/10*100);
+  const pct = 100 - 100 / (1 + speedLevel * 0.35);
   healthBar.style.width      = (8 + pct*.92) + "%";
   healthBar.style.background = flashTimer > 0
     ? "linear-gradient(90deg,#FF8C00,#FFD700)"
     : `linear-gradient(90deg,#0052FF ${100-pct}%,#60A5FA)`;
 }
 
-// ── End game ──
 function endGame() {
   const fs = Math.floor(score), ss = Math.floor(elapsed);
   gamesPlayed++;
