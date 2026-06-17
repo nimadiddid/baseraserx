@@ -1,7 +1,7 @@
 "use strict";
 
 const BASE_CHAIN_ID  = 8453;
-const BASE_RPC       = "https://mainnet.base.org";
+const BASE_RPC       = "https://mainnet.base.org?builder=bc_otm6g9zw";
 const BASE_CHAIN_HEX = "0x" + BASE_CHAIN_ID.toString(16);
 const BASESCAN        = "https://basescan.org";
 const SCORE_PER_SEC  = 5;
@@ -87,7 +87,7 @@ async function ensureContract() {
   if (!wallet) return null;
   if (deploying) return null;
 
-  
+  // اگه قبلاً deploy شده، همونو برگردون
   if (contractAddr) {
     try {
       const existing = new ethers.Contract(contractAddr, CONTRACT_ABI, wallet.signer);
@@ -99,14 +99,14 @@ async function ensureContract() {
     }
   }
 
-  
+  // Deploy جدید روی Base
   deploying = true;
   try {
     const signer = wallet.signer;
     const factory = new ethers.ContractFactory(CONTRACT_ABI, CONTRACT_BYTECODE, signer);
     const deployed = await factory.deploy();
 
-    
+    // سازگار با ethers v5 و v6
     if (deployed.waitForDeployment) {
       await deployed.waitForDeployment();           // ethers v6
       contractAddr = await deployed.getAddress();
@@ -147,18 +147,7 @@ async function submitScoreOnChain(points, secs) {
     if (!c) { show("Deploy failed — open console for details."); setTimeout(hide, 5000); return; }
 
     show("Submitting score on Base — confirm in wallet…");
-
-     
-    const tx = await c.submitScore(
-      BigInt(points),
-      BigInt(secs),
-      {
-        customData: {
-          builder: "bc_otm6g9zw"
-        }
-      }
-    );
-
+    const tx = await c.submitScore(BigInt(points), BigInt(secs));
     show("Waiting for confirmation…");
     const receipt = await tx.wait(1);
 
@@ -660,4 +649,4 @@ function endGame() {
   if (el("tx-done"))     el("tx-done").classList.add("hidden");
   if (el("gameover-card")) el("gameover-card").classList.add("show");
   submitScoreOnChain(fs, ss);
-}
+    }
