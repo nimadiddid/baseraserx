@@ -80,6 +80,10 @@
   .health-bar-wrap { height:6px; background:rgba(255,255,255,.1); border-radius:3px; overflow:hidden; }
   .health-bar { height:100%; width:8%; background:linear-gradient(90deg,#0052FF,#60A5FA); border-radius:3px; transition:width .2s; }
 
+  /* Pause button */
+  #btn-pause { background:rgba(255,255,255,.1); border:1.5px solid rgba(255,255,255,.25); color:#fff; font-size:16px; width:38px; height:38px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background .15s,border-color .15s; flex-shrink:0; }
+  #btn-pause:hover { background:rgba(255,255,255,.22); border-color:rgba(255,255,255,.5); }
+
   /* Game over card */
   #gameover-card { display:none; position:absolute; inset:0; z-index:20; background:rgba(0,5,15,.9); align-items:center; justify-content:center; }
   #gameover-card.show { display:flex; }
@@ -201,6 +205,7 @@
       <span class="hud-label">TIME</span>
       <span class="hud-value" id="hud-time">0s</span>
     </div>
+    <button id="btn-pause" title="Pause">⏸</button>
   </div>
   <div id="gameover-card">
     <div class="go-card">
@@ -326,6 +331,10 @@ document.getElementById('btn-start').addEventListener('click', async function(){
     if(!ok) return;
   }
   runCountdownThenStart();
+});
+
+document.getElementById('btn-pause').addEventListener('click', function(){
+  if(typeof togglePause === 'function') togglePause();
 });
 
 document.getElementById('btn-play-again').addEventListener('click', function(){
