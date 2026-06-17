@@ -87,7 +87,7 @@ async function ensureContract() {
   if (!wallet) return null;
   if (deploying) return null;
 
-  // اگه قبلاً deploy شده، همونو برگردون
+  
   if (contractAddr) {
     try {
       const existing = new ethers.Contract(contractAddr, CONTRACT_ABI, wallet.signer);
@@ -99,14 +99,14 @@ async function ensureContract() {
     }
   }
 
-  // Deploy جدید روی Base
+  
   deploying = true;
   try {
     const signer = wallet.signer;
     const factory = new ethers.ContractFactory(CONTRACT_ABI, CONTRACT_BYTECODE, signer);
     const deployed = await factory.deploy();
 
-    // سازگار با ethers v5 و v6
+    
     if (deployed.waitForDeployment) {
       await deployed.waitForDeployment();           // ethers v6
       contractAddr = await deployed.getAddress();
@@ -147,7 +147,18 @@ async function submitScoreOnChain(points, secs) {
     if (!c) { show("Deploy failed — open console for details."); setTimeout(hide, 5000); return; }
 
     show("Submitting score on Base — confirm in wallet…");
-    const tx = await c.submitScore(BigInt(points), BigInt(secs));
+
+     
+    const tx = await c.submitScore(
+      BigInt(points),
+      BigInt(secs),
+      {
+        customData: {
+          builder: "bc_otm6g9zw"
+        }
+      }
+    );
+
     show("Waiting for confirmation…");
     const receipt = await tx.wait(1);
 
