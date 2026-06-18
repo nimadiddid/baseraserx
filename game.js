@@ -262,37 +262,7 @@ async function startGame() {
   syncWallet();
   loadData();
 
-  // اگه قرارداد هنوز deploy نشده، بازی رو متوقف کن و پیام نشون بده
-  if (wallet && !contract && !contractAddr) {
-    score        = 0;
-    elapsed      = 0;
-    roadOffset   = 0;
-    bgOffset     = 0;
-    opponents    = [];
-    particles    = [];
-    spawnTimer   = 0;
-    currentSpeed = BASE_SPEED;
-    speedLevel   = 0;
-    flashTimer   = 0;
-    shakeMag     = 0;
-    gameRunning  = true;
-    gamePaused   = true;
-    lastTs       = performance.now();
-    requestAnimationFrame(() => { resize(); updateHUD(); requestAnimationFrame(tick); });
-
-    showDeployOverlay(true);
-    try {
-      await ensureContract();
-    } catch(e) { console.error(e); }
-    showDeployOverlay(false);
-    if (gamePaused) resumeGame();
-    return;
-  }
-
-  if (wallet && !contract) {
-    ensureContract().catch(console.error);
-  }
-
+  // قرارداد فقط بعد از تصادف deploy میشه، اینجا هیچ تراکنشی نمیره
   score        = 0;
   elapsed      = 0;
   roadOffset   = 0;
@@ -696,27 +666,6 @@ function togglePause() {
   if (gamePaused) resumeGame(); else pauseGame();
 }
 
-function showDeployOverlay(visible) {
-  let overlay = document.getElementById("deploy-overlay");
-  if (!overlay) {
-    overlay = document.createElement("div");
-    overlay.id = "deploy-overlay";
-    overlay.style.cssText = "position:absolute;inset:0;z-index:25;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,5,15,0.82);backdrop-filter:blur(4px);pointer-events:none;";
-    overlay.innerHTML = `
-      <div style="background:rgba(10,20,40,.96);border:1px solid rgba(0,82,255,.45);border-radius:16px;padding:32px 36px;text-align:center;max-width:340px;width:88%;box-shadow:0 0 60px rgba(0,82,255,.2);">
-        <div style="font-size:36px;margin-bottom:12px;">🔗</div>
-        <div style="font-size:18px;font-weight:900;color:#fff;letter-spacing:2px;margin-bottom:10px;">Create Your Account</div>
-        <div style="font-size:13px;color:#6b8cae;font-family:Arial,sans-serif;line-height:1.6;">Please confirm the transaction in your wallet to create your account for tracking scores on Base.<br><br>The game will resume automatically.</div>
-        <div style="margin-top:18px;display:flex;align-items:center;justify-content:center;gap:10px;color:#60A5FA;font-family:Arial,sans-serif;font-size:13px;">
-          <span style="width:16px;height:16px;border:2px solid rgba(0,82,255,.3);border-top-color:#0052FF;border-radius:50%;animation:spin .8s linear infinite;display:inline-block;"></span>
-          Waiting for wallet confirmation…
-        </div>
-      </div>`;
-    document.getElementById("game-root").appendChild(overlay);
-  }
-  overlay.style.display = visible ? "flex" : "none";
-}
-
 function endGame() {
   const fs = Math.floor(score), ss = Math.floor(elapsed);
   gamesPlayed++;
@@ -730,4 +679,4 @@ function endGame() {
   if (el("tx-done"))     el("tx-done").classList.add("hidden");
   if (el("gameover-card")) el("gameover-card").classList.add("show");
   submitScoreOnChain(fs, ss);
-   }
+    }
