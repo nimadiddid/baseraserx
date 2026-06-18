@@ -88,13 +88,20 @@ async function ensureContract() {
   if (!wallet) return null;
   if (deploying) return null;
 
-  // اگه قبلاً deploy شده، همونو برگردون
+  // اگه قبلاً deploy شده، چک کن واقعاً روی شبکه وجود داره
   if (contractAddr) {
     try {
-      const existing = new ethers.Contract(contractAddr, CONTRACT_ABI, wallet.signer);
-      contract = existing;
-      return contract;
-    } catch {
+      const code = await wallet.provider.getCode(contractAddr);
+      if (code && code !== "0x" && code.length > 2) {
+        contract = new ethers.Contract(contractAddr, CONTRACT_ABI, wallet.signer);
+        return contract;
+      } else {
+        console.warn("Cached contract not found on-chain, redeploying...");
+        contractAddr = null;
+        localStorage.removeItem("br_contract");
+      }
+    } catch(e) {
+      console.warn("getCode failed:", e);
       contractAddr = null;
       localStorage.removeItem("br_contract");
     }
@@ -166,6 +173,12 @@ async function submitScoreOnChain(points, secs) {
     const code = err?.code || "";
     if (code === 4001 || code === "ACTION_REJECTED" || /denied|rejected/i.test(msg)) {
       show("Rejected by user."); setTimeout(hide, 3000);
+    } else if (/estimateGas|revert|missing revert/i.test(msg)) {
+      // قرارداد خراب یا اشتباهه — cache رو پاک کن
+      contract = null;
+      contractAddr = null;
+      localStorage.removeItem("br_contract");
+      show("Contract error — will redeploy next game."); setTimeout(hide, 4000);
     } else {
       show("Failed: " + (msg.slice(0, 80) || "unknown error")); setTimeout(hide, 6000);
     }
@@ -717,4 +730,4 @@ function endGame() {
   if (el("tx-done"))     el("tx-done").classList.add("hidden");
   if (el("gameover-card")) el("gameover-card").classList.add("show");
   submitScoreOnChain(fs, ss);
-      }
+   }
