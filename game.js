@@ -52,7 +52,7 @@ let speedLevel   = 0;
 let flashTimer   = 0;
 let shakeMag     = 0;
 let particles    = [];
-let speedBoostSmoke = 0;  
+let speedBoostSmoke = 0; 
 
 let canvas, ctx, hudScore, hudTime, healthBar;
 
@@ -262,7 +262,7 @@ function tick(ts) {
     speedLevel   = newLevel;
     currentSpeed = BASE_SPEED + speedLevel * SPEED_STEP;
     flashTimer   = 2.0;
-    speedBoostSmoke = 1.0;  // یک ثانیه دود
+    speedBoostSmoke = 1.0;  
   }
   if (flashTimer > 0) flashTimer -= dt;
   if (shakeMag   > 0) shakeMag = Math.max(0, shakeMag - 80*dt);
@@ -416,14 +416,14 @@ function drawRoad(W, H) {
     ctx.beginPath(); ctx.moveTo(rw+2, y); ctx.lineTo(rw+16, y); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(W-rw-2, y); ctx.lineTo(W-rw-16, y); ctx.stroke();
   }
-  
+  // خط‌کشی‌های سفید کوتاه وسط لاین‌ها (به جای نقطه) — حرکت به سمت پایین = عقب
   ctx.strokeStyle = "rgba(255,255,255,.55)";
   ctx.lineWidth = 2.5;
   ctx.setLineDash([]);
   const markH = 18, markGap = 70;
   for (let i = 0; i < LANE_COUNT; i++) {
     const lx = lanes[i].cx;
-    for (let y = -(roadOffset % markGap) - markH; y < H + markH; y += markGap) {
+    for (let y = 0; y < H; y += markGap) {
       ctx.beginPath(); ctx.moveTo(lx, y); ctx.lineTo(lx, y + markH); ctx.stroke();
     }
   }
@@ -648,4 +648,4 @@ function endGame() {
   if (el("tx-done"))     el("tx-done").classList.add("hidden");
   if (el("gameover-card")) el("gameover-card").classList.add("show");
   submitScoreOnChain(fs, ss);
-    }
+}
