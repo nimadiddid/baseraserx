@@ -52,6 +52,7 @@ let speedLevel   = 0;
 let flashTimer   = 0;
 let shakeMag     = 0;
 let particles    = [];
+let speedBoostSmoke = 0;  
 
 let canvas, ctx, hudScore, hudTime, healthBar;
 
@@ -189,6 +190,19 @@ function spawnParticle(x, y, type) {
     : { vx:(Math.random()-.5)*80, vy:-60-Math.random()*60, life:.6,  maxLife:.6,  size:2+Math.random()*4, color:"255,160,40"  };
   particles.push({ ...base, x: x+(Math.random()-.5)*8, y, type });
 }
+
+function spawnBoostSmoke(x, y) {
+  particles.push({
+    x: x + (Math.random()-.5)*10,
+    y,
+    vx: (Math.random()-.5)*20,
+    vy: 60 + Math.random()*80,   
+    life: 0.7, maxLife: 0.7,
+    size: 5 + Math.random()*7,
+    color: "180,180,255",         
+    type: "smoke"
+  });
+}
 function updateParticles(dt) {
   for (const p of particles) { p.x += p.vx*dt; p.y += p.vy*dt; p.vy += 40*dt; p.life -= dt; }
   particles = particles.filter(p => p.life > 0);
@@ -224,6 +238,7 @@ async function startGame() {
   speedLevel   = 0;
   flashTimer   = 0;
   shakeMag     = 0;
+  speedBoostSmoke = 0;
   gameRunning  = true;
   lastTs       = performance.now();
 
@@ -247,9 +262,11 @@ function tick(ts) {
     speedLevel   = newLevel;
     currentSpeed = BASE_SPEED + speedLevel * SPEED_STEP;
     flashTimer   = 2.0;
+    speedBoostSmoke = 1.0;  // یک ثانیه دود
   }
   if (flashTimer > 0) flashTimer -= dt;
   if (shakeMag   > 0) shakeMag = Math.max(0, shakeMag - 80*dt);
+  if (speedBoostSmoke > 0) speedBoostSmoke -= dt;
 
   roadOffset = (roadOffset + currentSpeed*dt) % 120;
   bgOffset   = (bgOffset   + currentSpeed*.15*dt) % canvas.height;
@@ -264,15 +281,14 @@ function tick(ts) {
 
   for (const op of opponents) {
     op.y += op.speed * dt;
-    if (Math.random() < .1) spawnParticle(op.x+op.w*.25, op.y+op.h*.85, "smoke");
-    if (Math.random() < .1) spawnParticle(op.x+op.w*.75, op.y+op.h*.85, "smoke");
   }
   opponents = opponents.filter(op => op.y < canvas.height + 50);
   updateParticles(dt);
 
-  if (speedLevel >= 2) {
-    if (Math.random() < .15) spawnParticle(playerX+playerW*.2, playerY+playerH*.88, "smoke");
-    if (Math.random() < .15) spawnParticle(playerX+playerW*.8, playerY+playerH*.88, "smoke");
+  
+  if (speedBoostSmoke > 0) {
+    if (Math.random() < .4) spawnBoostSmoke(playerX+playerW*.2, playerY+playerH*.88);
+    if (Math.random() < .4) spawnBoostSmoke(playerX+playerW*.8, playerY+playerH*.88);
   }
 
   let crashed = false;
@@ -400,12 +416,15 @@ function drawRoad(W, H) {
     ctx.beginPath(); ctx.moveTo(rw+2, y); ctx.lineTo(rw+16, y); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(W-rw-2, y); ctx.lineTo(W-rw-16, y); ctx.stroke();
   }
-  ctx.fillStyle = "rgba(255,240,180,.65)";
+  
+  ctx.strokeStyle = "rgba(255,255,255,.55)";
+  ctx.lineWidth = 2.5;
+  ctx.setLineDash([]);
+  const markH = 18, markGap = 70;
   for (let i = 0; i < LANE_COUNT; i++) {
     const lx = lanes[i].cx;
-    for (let y = -(roadOffset % 80); y < H; y += 80) {
-      ctx.save(); ctx.shadowColor = "rgba(255,220,100,.8)"; ctx.shadowBlur = 5;
-      ctx.beginPath(); ctx.arc(lx, y, 2.5, 0, Math.PI*2); ctx.fill(); ctx.restore();
+    for (let y = -(roadOffset % markGap) - markH; y < H + markH; y += markGap) {
+      ctx.beginPath(); ctx.moveTo(lx, y); ctx.lineTo(lx, y + markH); ctx.stroke();
     }
   }
   const fog = ctx.createLinearGradient(0, H*.20, 0, H*.38);
