@@ -416,17 +416,7 @@ function drawRoad(W, H) {
     ctx.beginPath(); ctx.moveTo(rw+2, y); ctx.lineTo(rw+16, y); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(W-rw-2, y); ctx.lineTo(W-rw-16, y); ctx.stroke();
   }
-  
-  ctx.strokeStyle = "rgba(255,255,255,.55)";
-  ctx.lineWidth = 2.5;
-  const markH = 22, markGap = 80;
-  const markOff = roadOffset % markGap;
-  for (let i = 0; i < LANE_COUNT; i++) {
-    const lx = lanes[i].cx;
-    for (let y = markOff - markGap; y < H + markH; y += markGap) {
-      ctx.beginPath(); ctx.moveTo(lx, y); ctx.lineTo(lx, y + markH); ctx.stroke();
-    }
-  }
+
   const fog = ctx.createLinearGradient(0, H*.20, 0, H*.38);
   fog.addColorStop(0, "rgba(5,10,30,.75)"); fog.addColorStop(1, "rgba(5,10,30,0)");
   ctx.fillStyle = fog; ctx.fillRect(0, H*.20, W, H*.20);
@@ -648,4 +638,4 @@ function endGame() {
   if (el("tx-done"))     el("tx-done").classList.add("hidden");
   if (el("gameover-card")) el("gameover-card").classList.add("show");
   submitScoreOnChain(fs, ss);
-                                   }
+    }
