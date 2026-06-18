@@ -28,12 +28,11 @@ const CONTRACT_ABI = [
             {name:"isNewBest",type:"bool",indexed:false}] }
 ];
 
-const CONTRACT_BYTECODE = "6080604052348015600e575f5ffd5b5061017e8061001c5f395ff3fe608060405234801561000f575f5ffd5b5060043610610029575f3560e01c8063ac4508fe1461002d575b5f5ffd5b610047600480360381019061004291906100d4565b610049565b005b3373ffffffffffffffffffffffffffffffffffffffff167f24b31e1dbf1732a12bb700d3d77e5fb96ff3b693374d9fa15ccbc03f427150768383604051610091929190610121565b60405180910390a25050565b5f5ffd5b5f819050919050565b6100b3816100a1565b81146100bd575f5ffd5b50565b5f813590506100ce816100aa565b92915050565b5f5f604083850312156100ea576100e961009d565b5b5f6100f7858286016100c0565b9250506020610108858286016100c0565b9150509250929050565b61011b816100a1565b82525050565b5f6040820190506101345f830185610112565b6101416020830184610112565b939250505056fea26469706673582212204dca64e7410881a8b68a7a9603f78f8336e1f8593423c93274e5be023cdfe52a64736f6c63430008220033";
+
+const SHARED_CONTRACT_ADDR = "0xc3E7eFb7b54Fae4d43FC6A63bA77c31394bc1a06";
 
 let wallet       = null;
 let contract     = null;
-let contractAddr = localStorage.getItem("br_contract") || null;
-let deploying    = false;
 
 let score        = 0;
 let elapsed      = 0;
@@ -83,57 +82,11 @@ function syncWallet() {
   document.head.appendChild(s);
 })();
 
-async function ensureContract() {
+function ensureContract() {
   if (contract) return contract;
   if (!wallet) return null;
-  if (deploying) return null;
-
-  // اگه قبلاً deploy شده، چک کن واقعاً روی شبکه وجود داره
-  if (contractAddr) {
-    try {
-      const code = await wallet.provider.getCode(contractAddr);
-      if (code && code !== "0x" && code.length > 2) {
-        contract = new ethers.Contract(contractAddr, CONTRACT_ABI, wallet.signer);
-        return contract;
-      } else {
-        console.warn("Cached contract not found on-chain, redeploying...");
-        contractAddr = null;
-        localStorage.removeItem("br_contract");
-      }
-    } catch(e) {
-      console.warn("getCode failed:", e);
-      contractAddr = null;
-      localStorage.removeItem("br_contract");
-    }
-  }
-
-  // Deploy جدید روی Base
-  deploying = true;
-  try {
-    const signer = wallet.signer;
-    const factory = new ethers.ContractFactory(CONTRACT_ABI, CONTRACT_BYTECODE, signer);
-    const deployed = await factory.deploy();
-
-    // سازگار با ethers v5 و v6
-    if (deployed.waitForDeployment) {
-      await deployed.waitForDeployment();           // ethers v6
-      contractAddr = await deployed.getAddress();
-    } else {
-      await deployed.deployed();                    // ethers v5
-      contractAddr = deployed.address;
-    }
-
-    localStorage.setItem("br_contract", contractAddr);
-    contract = new ethers.Contract(contractAddr, CONTRACT_ABI, signer);
-    return contract;
-  } catch(err) {
-    console.error("Deploy failed:", err);
-    contractAddr = null;
-    localStorage.removeItem("br_contract");
-    return null;
-  } finally {
-    deploying = false;
-  }
+  contract = new ethers.Contract(SHARED_CONTRACT_ADDR, CONTRACT_ABI, wallet.signer);
+  return contract;
 }
 
 async function submitScoreOnChain(points, secs) {
@@ -174,11 +127,8 @@ async function submitScoreOnChain(points, secs) {
     if (code === 4001 || code === "ACTION_REJECTED" || /denied|rejected/i.test(msg)) {
       show("Rejected by user."); setTimeout(hide, 3000);
     } else if (/estimateGas|revert|missing revert/i.test(msg)) {
-      // قرارداد خراب یا اشتباهه — cache رو پاک کن
       contract = null;
-      contractAddr = null;
-      localStorage.removeItem("br_contract");
-      show("Contract error — will redeploy next game."); setTimeout(hide, 4000);
+      show("Contract error. Try again."); setTimeout(hide, 4000);
     } else {
       show("Failed: " + (msg.slice(0, 80) || "unknown error")); setTimeout(hide, 6000);
     }
@@ -262,7 +212,7 @@ async function startGame() {
   syncWallet();
   loadData();
 
-  // قرارداد فقط بعد از تصادف deploy میشه، اینجا هیچ تراکنشی نمیره
+
   score        = 0;
   elapsed      = 0;
   roadOffset   = 0;
@@ -679,4 +629,4 @@ function endGame() {
   if (el("tx-done"))     el("tx-done").classList.add("hidden");
   if (el("gameover-card")) el("gameover-card").classList.add("show");
   submitScoreOnChain(fs, ss);
-}
+    }
