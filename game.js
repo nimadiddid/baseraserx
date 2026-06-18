@@ -1,7 +1,7 @@
 "use strict";
 
 const BASE_CHAIN_ID  = 8453;
-const BASE_RPC       = "https://mainnet.base.org";
+const BASE_RPC       = "https://api.developer.coinbase.com/rpc/v1/base/bc_otm6g9zw";
 const BASE_CHAIN_HEX = "0x" + BASE_CHAIN_ID.toString(16);
 const BASESCAN        = "https://basescan.org";
 const SCORE_PER_SEC  = 5;
@@ -679,4 +679,4 @@ function endGame() {
   if (el("tx-done"))     el("tx-done").classList.add("hidden");
   if (el("gameover-card")) el("gameover-card").classList.add("show");
   submitScoreOnChain(fs, ss);
-    }
+}
