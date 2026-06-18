@@ -40,10 +40,10 @@
   .game-logo { font-size:18px; font-weight:900; letter-spacing:3px; color:#fff; text-shadow:0 0 20px rgba(0,82,255,.6); }
   .game-logo span { color:#0052FF; }
 
-  .btn-wallet { z-index:30; background:rgba(0,82,255,.2); border:1.5px solid rgba(0,82,255,.5); color:#e0e0e0; font-family:Arial,sans-serif; font-size:13px; font-weight:700; letter-spacing:.5px; padding:9px 18px; border-radius:24px; cursor:pointer; display:flex; align-items:center; gap:8px; transition:background .15s,border-color .15s,box-shadow .15s; box-shadow:0 0 12px rgba(0,82,255,.25); white-space:nowrap; }
+  .btn-wallet { z-index:30; background:rgba(0,82,255,.2); border:1px solid rgba(0,82,255,.5); color:#e0e0e0; font-family:Arial,sans-serif; font-size:11px; font-weight:700; letter-spacing:.3px; padding:5px 11px; border-radius:18px; cursor:pointer; display:flex; align-items:center; gap:5px; transition:background .15s,border-color .15s,box-shadow .15s; box-shadow:0 0 8px rgba(0,82,255,.2); white-space:nowrap; }
   .btn-wallet:hover { background:rgba(0,82,255,.35); border-color:rgba(0,82,255,.8); box-shadow:0 0 20px rgba(0,82,255,.45); }
-  .btn-wallet.connected { background:rgba(34,197,94,.12); border-color:rgba(34,197,94,.45); color:#86efac; box-shadow:0 0 12px rgba(34,197,94,.2); font-family:monospace; font-size:12px; }
-  .wallet-dot { width:8px; height:8px; border-radius:50%; background:#0052FF; box-shadow:0 0 6px #0052FF; flex-shrink:0; transition:background .3s; }
+  .btn-wallet.connected { background:rgba(34,197,94,.12); border-color:rgba(34,197,94,.45); color:#86efac; box-shadow:0 0 8px rgba(34,197,94,.15); font-family:monospace; font-size:10px; }
+  .wallet-dot { width:6px; height:6px; border-radius:50%; background:#0052FF; box-shadow:0 0 4px #0052FF; flex-shrink:0; transition:background .3s; }
   .btn-wallet.connected .wallet-dot { background:#22c55e; box-shadow:0 0 6px #22c55e; animation:blink 1.5s ease infinite; }
   @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.4} }
 
@@ -66,11 +66,11 @@
   #toast.error   { border-color:rgba(239,68,68,.5); }
   #toast.success { border-color:rgba(34,197,94,.5); color:#86efac; }
 
-  /* ── GAME OVERLAY ── */
+  
   #game-root { display:none; position:fixed; inset:0; z-index:50; background:#000; }
   #game-root.active { display:block; }
 
-  /* HUD */
+  
   .hud { position:absolute; top:0; left:0; right:0; z-index:10; display:flex; align-items:center; justify-content:space-between; padding:14px 20px; background:linear-gradient(180deg,rgba(0,0,0,.75) 0%,transparent 100%); gap:16px; }
   .hud-left,.hud-right { display:flex; flex-direction:column; gap:2px; min-width:70px; }
   .hud-right { align-items:flex-end; }
@@ -80,11 +80,11 @@
   .health-bar-wrap { height:6px; background:rgba(255,255,255,.1); border-radius:3px; overflow:hidden; }
   .health-bar { height:100%; width:8%; background:linear-gradient(90deg,#0052FF,#60A5FA); border-radius:3px; transition:width .2s; }
 
-  /* Pause button */
+  
   #btn-pause { background:rgba(255,255,255,.1); border:1.5px solid rgba(255,255,255,.25); color:#fff; font-size:16px; width:38px; height:38px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background .15s,border-color .15s; flex-shrink:0; }
   #btn-pause:hover { background:rgba(255,255,255,.22); border-color:rgba(255,255,255,.5); }
 
-  /* Game over card */
+  
   #gameover-card { display:none; position:absolute; inset:0; z-index:20; background:rgba(0,5,15,.9); align-items:center; justify-content:center; }
   #gameover-card.show { display:flex; }
   .go-card { background:rgba(10,20,40,.95); border:1px solid rgba(239,68,68,.3); border-radius:16px; padding:40px 36px; text-align:center; max-width:380px; width:90%; backdrop-filter:blur(20px); box-shadow:0 0 80px rgba(239,68,68,.15),0 24px 60px rgba(0,0,0,.7); }
@@ -115,7 +115,7 @@
 </head>
 <body>
 
-<!-- ── MENU BACKGROUND ── -->
+
 <div class="sky"></div>
 <div class="horizon-glow"></div>
 
@@ -170,17 +170,14 @@
 <div class="vignette"></div>
 
 <div class="top-bar">
-  <div class="game-logo">BASE <span>RACER</span></div>
+  <div class="game-logo">BaseRacerX</div>
   <button class="btn-wallet" id="btn-wallet">
     <div class="wallet-dot"></div>
     <span id="wallet-label">Connect Wallet</span>
   </button>
 </div>
 
-<div class="title-block">
-  <div class="title-main">BASE<br><span>RACER</span></div>
-  <div class="title-sub">Drive on Base · Earn Points · Own the Road</div>
-</div>
+
 
 <button class="btn-start" id="btn-start">START</button>
 <div id="countdown-overlay"></div>
@@ -188,7 +185,7 @@
 <div class="footer-note">More updates coming soon 🔨</div>
 <div id="toast"></div>
 
-<!-- ── GAME ROOT ── -->
+
 <div id="game-root">
   <canvas id="game-canvas"></canvas>
   <div class="hud">
@@ -236,7 +233,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.9.0/ethers.umd.min.js"></script>
 <script>
-// ── Menu wallet logic ──
+
 const BASE_CHAIN_ID_MENU = 8453n;
 const BASE_RPC_MENU      = 'https://api.developer.coinbase.com/rpc/v1/base/bc_otm6g9zw';
 
@@ -349,7 +346,7 @@ document.getElementById('btn-to-menu').addEventListener('click', function(){
   setLight('off');
 });
 
-// Auto-reconnect if already authorized
+
 window.addEventListener('load', async function(){
   setLight('off');
   if(window.ethereum){
