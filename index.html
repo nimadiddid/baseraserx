@@ -66,11 +66,11 @@
   #toast.error   { border-color:rgba(239,68,68,.5); }
   #toast.success { border-color:rgba(34,197,94,.5); color:#86efac; }
 
-  
+  /* ── GAME OVERLAY ── */
   #game-root { display:none; position:fixed; inset:0; z-index:50; background:#000; }
   #game-root.active { display:block; }
 
-  
+  /* HUD */
   .hud { position:absolute; top:0; left:0; right:0; z-index:10; display:flex; align-items:center; justify-content:space-between; padding:14px 20px; background:linear-gradient(180deg,rgba(0,0,0,.75) 0%,transparent 100%); gap:16px; }
   .hud-left,.hud-right { display:flex; flex-direction:column; gap:2px; min-width:70px; }
   .hud-right { align-items:flex-end; }
@@ -80,11 +80,15 @@
   .health-bar-wrap { height:6px; background:rgba(255,255,255,.1); border-radius:3px; overflow:hidden; }
   .health-bar { height:100%; width:8%; background:linear-gradient(90deg,#0052FF,#60A5FA); border-radius:3px; transition:width .2s; }
 
-  
+  .btn-secondary { background:rgba(0,82,255,.25); border:1.5px solid rgba(0,82,255,.5); color:#93C5FD; font-size:14px; font-weight:800; letter-spacing:1px; padding:14px; border-radius:14px; cursor:pointer; width:100%; transition:background .15s; }
+  .btn-secondary:hover { background:rgba(0,82,255,.4); }
+  #leaderboard-overlay { scrollbar-width:thin; scrollbar-color:rgba(255,255,255,.15) transparent; }
+
+  /* Pause button */
   #btn-pause { background:rgba(255,255,255,.1); border:1.5px solid rgba(255,255,255,.25); color:#fff; font-size:16px; width:38px; height:38px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background .15s,border-color .15s; flex-shrink:0; }
   #btn-pause:hover { background:rgba(255,255,255,.22); border-color:rgba(255,255,255,.5); }
 
-  
+  /* Game over card */
   #gameover-card { display:none; position:absolute; inset:0; z-index:20; background:rgba(0,5,15,.9); align-items:center; justify-content:center; }
   #gameover-card.show { display:flex; }
   .go-card { background:rgba(10,20,40,.95); border:1px solid rgba(239,68,68,.3); border-radius:16px; padding:40px 36px; text-align:center; max-width:380px; width:90%; backdrop-filter:blur(20px); box-shadow:0 0 80px rgba(239,68,68,.15),0 24px 60px rgba(0,0,0,.7); }
@@ -115,7 +119,7 @@
 </head>
 <body>
 
-
+<!-- ── MENU BACKGROUND ── -->
 <div class="sky"></div>
 <div class="horizon-glow"></div>
 
@@ -179,13 +183,15 @@
 
 
 
+<button id="btn-menu-leaderboard" style="position:absolute;top:68px;right:16px;z-index:30;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.18);color:#cdd6f4;font-size:12px;font-weight:700;letter-spacing:1px;padding:6px 14px;border-radius:20px;cursor:pointer;display:flex;align-items:center;gap:6px;">🏆 Leaderboard</button>
+
 <button class="btn-start" id="btn-start">START</button>
 <div id="countdown-overlay"></div>
 <div class="network-note">Base network only · EVM wallet required</div>
 <div class="footer-note">More updates coming soon 🔨</div>
 <div id="toast"></div>
 
-
+<!-- ── GAME ROOT ── -->
 <div id="game-root">
   <canvas id="game-canvas"></canvas>
   <div class="hud">
@@ -225,15 +231,27 @@
       </div>
       <div class="go-buttons">
         <button class="btn-primary" id="btn-play-again">▶ Play Again</button>
+        <button class="btn-secondary" id="btn-leaderboard">🏆</button>
         <button class="btn-ghost"   id="btn-to-menu">Menu</button>
       </div>
+    </div>
+  </div>
+  <!-- Leaderboard Overlay -->
+  <div id="leaderboard-overlay" style="display:none;position:absolute;inset:0;z-index:40;background:rgba(0,5,20,0.97);overflow-y:auto;flex-direction:column;align-items:center;padding:24px 16px 40px;">
+    <div style="width:100%;max-width:480px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+        <div style="font-size:20px;font-weight:900;letter-spacing:3px;color:#fff;">🏆 LEADERBOARD</div>
+        <button id="btn-close-lb" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;border-radius:50%;width:36px;height:36px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>
+      </div>
+      <div id="lb-status" style="text-align:center;color:#6b8cae;font-size:13px;padding:20px 0;">Loading...</div>
+      <div id="lb-table" style="display:none;width:100%;"></div>
     </div>
   </div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.9.0/ethers.umd.min.js"></script>
 <script>
-
+// ── Menu wallet logic ──
 const BASE_CHAIN_ID_MENU = 8453n;
 const BASE_RPC_MENU      = 'https://api.developer.coinbase.com/rpc/v1/base/bc_otm6g9zw';
 
@@ -346,7 +364,79 @@ document.getElementById('btn-to-menu').addEventListener('click', function(){
   setLight('off');
 });
 
+document.getElementById('btn-menu-leaderboard').addEventListener('click', function(){
+  showLeaderboard();
+});
 
+document.getElementById('btn-leaderboard').addEventListener('click', function(){
+  showLeaderboard();
+});
+
+document.getElementById('btn-close-lb').addEventListener('click', function(){
+  const ov = document.getElementById('leaderboard-overlay');
+  ov.style.display = 'none';
+});
+
+async function showLeaderboard() {
+  const ov  = document.getElementById('leaderboard-overlay');
+  const st  = document.getElementById('lb-status');
+  const tbl = document.getElementById('lb-table');
+  ov.style.display  = 'flex';
+  tbl.style.display = 'none';
+  st.style.display  = 'block';
+  st.textContent    = 'Loading from Base...';
+
+  try {
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const c = new ethers.Contract(
+      '0x15609841b39Ae42EdE65832bE9FA9c3ec00282C4',
+      [{name:'getBoard',type:'function',stateMutability:'view',inputs:[],outputs:[{name:'',type:'tuple[]',components:[
+        {name:'player',type:'address'},{name:'score',type:'uint32'},
+        {name:'timeSeconds',type:'uint32'},{name:'timestamp',type:'uint64'}
+      ]}]}],
+      provider
+    );
+
+    const myAddr = (await provider.listAccounts())[0]?.address?.toLowerCase() || '';
+    const board  = await c.getBoard();
+
+    // Sort by score descending
+    const sorted = [...board].sort((a,b) => Number(b.score) - Number(a.score));
+
+    if (sorted.length === 0) {
+      st.textContent = 'No scores yet. Be the first!';
+      return;
+    }
+
+    st.style.display = 'none';
+    tbl.style.display = 'block';
+
+    const rows = sorted.map((e, i) => {
+      const addr    = e.player.toLowerCase();
+      const isMe    = addr === myAddr;
+      const short   = e.player.slice(0,6) + '...' + e.player.slice(-4);
+      const rank    = i + 1;
+      const medal   = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : rank;
+      const bg      = isMe ? 'rgba(0,82,255,.18)' : i % 2 === 0 ? 'rgba(255,255,255,.03)' : 'transparent';
+      const border  = isMe ? '1px solid rgba(0,82,255,.4)' : '1px solid transparent';
+      return `<div style="display:flex;align-items:center;padding:10px 12px;border-radius:10px;background:${bg};border:${border};margin-bottom:4px;gap:10px;">
+        <div style="width:32px;text-align:center;font-size:${rank<=3?'18':'13'}px;color:${isMe?'#60A5FA':'#6b8cae'};flex-shrink:0;">${medal}</div>
+        <div style="flex:1;font-family:monospace;font-size:13px;color:${isMe?'#93C5FD':'#cdd6f4'};">
+          ${short}${isMe?' <span style="color:#60A5FA;font-size:11px;font-family:Arial;">(you)</span>':''}
+        </div>
+        <div style="font-size:15px;font-weight:900;color:${isMe?'#60A5FA':'#fff'};margin-right:8px;">${e.score}</div>
+        <div style="font-size:11px;color:#6b8cae;">${e.timeSeconds}s</div>
+      </div>`;
+    }).join('');
+
+    tbl.innerHTML = `<div style="font-size:11px;color:#6b8cae;text-align:right;margin-bottom:8px;">${sorted.length} players</div>` + rows;
+
+  } catch(err) {
+    st.textContent = 'Failed to load: ' + (err.message || 'unknown error');
+  }
+}
+
+// Auto-reconnect if already authorized
 window.addEventListener('load', async function(){
   setLight('off');
   if(window.ethereum){
