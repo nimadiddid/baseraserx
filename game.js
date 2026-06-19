@@ -11,25 +11,22 @@ const SPEED_STEP     = 35;
 const SPAWN_BASE     = 1.6;
 
 const CONTRACT_ABI = [
-  { name:"submitScore", type:"function", stateMutability:"nonpayable",
-    inputs:[{name:"points",type:"uint256"},{name:"timeSeconds",type:"uint256"}], outputs:[] },
-  { name:"bestScore", type:"function", stateMutability:"view",
-    inputs:[{name:"player",type:"address"}],
-    outputs:[{name:"points",type:"uint256"},{name:"timeSeconds",type:"uint256"},
-             {name:"timestamp",type:"uint256"},{name:"gameNumber",type:"uint256"}] },
-  { name:"gamesPlayed", type:"function", stateMutability:"view",
+  { name:"submitScore",   type:"function", stateMutability:"nonpayable",
+    inputs:[{name:"score",type:"uint32"},{name:"timeSeconds",type:"uint32"}], outputs:[] },
+  { name:"getBoard",      type:"function", stateMutability:"view",
+    inputs:[], outputs:[{name:"",type:"tuple[]",components:[
+      {name:"player",type:"address"},{name:"score",type:"uint32"},
+      {name:"timeSeconds",type:"uint32"},{name:"timestamp",type:"uint64"}
+    ]}] },
+  { name:"getPlayerBest", type:"function", stateMutability:"view",
     inputs:[{name:"player",type:"address"}], outputs:[{name:"",type:"uint256"}] },
-  { name:"getLeaderboard", type:"function", stateMutability:"view",
-    inputs:[{name:"n",type:"uint256"}],
-    outputs:[{name:"addrs",type:"address[]"},{name:"points",type:"uint256[]"},{name:"times",type:"uint256[]"}] },
-  { name:"ScoreSubmitted", type:"event",
-    inputs:[{name:"player",type:"address",indexed:true},{name:"points",type:"uint256",indexed:false},
-            {name:"timeSeconds",type:"uint256",indexed:false},{name:"gameNumber",type:"uint256",indexed:false},
-            {name:"isNewBest",type:"bool",indexed:false}] }
+  { name:"ScoreSubmitted",type:"event",
+    inputs:[{name:"player",type:"address",indexed:true},{name:"score",type:"uint32"},
+            {name:"timeSeconds",type:"uint32"}] }
 ];
 
 
-const SHARED_CONTRACT_ADDR = "0xc3E7eFb7b54Fae4d43FC6A63bA77c31394bc1a06";
+const SHARED_CONTRACT_ADDR = "0x15609841b39Ae42EdE65832bE9FA9c3ec00282C4";
 
 let wallet       = null;
 let contract     = null;
