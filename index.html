@@ -174,7 +174,10 @@
 <div class="vignette"></div>
 
 <div class="top-bar">
-  <div class="game-logo">BaseRacerX</div>
+  <div style="display:flex;flex-direction:column;align-items:flex-start;gap:6px;">
+    <div class="game-logo">BaseRacerX</div>
+    <button id="btn-menu-leaderboard" style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.18);color:#cdd6f4;font-size:11px;font-weight:700;letter-spacing:1px;padding:5px 12px;border-radius:20px;cursor:pointer;display:flex;align-items:center;gap:5px;">🏆 Leaderboard</button>
+  </div>
   <button class="btn-wallet" id="btn-wallet">
     <div class="wallet-dot"></div>
     <span id="wallet-label">Connect Wallet</span>
@@ -182,8 +185,6 @@
 </div>
 
 
-
-<button id="btn-menu-leaderboard" style="position:absolute;top:68px;right:16px;z-index:30;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.18);color:#cdd6f4;font-size:12px;font-weight:700;letter-spacing:1px;padding:6px 14px;border-radius:20px;cursor:pointer;display:flex;align-items:center;gap:6px;">🏆 Leaderboard</button>
 
 <button class="btn-start" id="btn-start">START</button>
 <div id="countdown-overlay"></div>
@@ -231,7 +232,6 @@
       </div>
       <div class="go-buttons">
         <button class="btn-primary" id="btn-play-again">▶ Play Again</button>
-        <button class="btn-secondary" id="btn-leaderboard">🏆 LEADERBOARD</div></button>
         <button class="btn-ghost"   id="btn-to-menu">Menu</button>
       </div>
     </div>
@@ -365,10 +365,6 @@ document.getElementById('btn-to-menu').addEventListener('click', function(){
 });
 
 document.getElementById('btn-menu-leaderboard').addEventListener('click', function(){
-  showLeaderboard();
-});
-
-document.getElementById('btn-leaderboard').addEventListener('click', function(){
   showLeaderboard();
 });
 
